@@ -1,0 +1,16 @@
+\ MESSAGE MOVING WORDS                                          
+                                                                
+: TYPE>V   (S addr --   | puts memory into virtual )            
+   BEGIN DUP  C@ DUP EMIT DUP >V DUP > 128 SWAP 0= OR           
+     SWAP 1+ SWAP                                               
+   UNTIL DROP ;                                                 
+                                                                
+: MED  MNH   ." Enter address of existing message " CR CR       
+  QUERY INTERPRET TYPE>V V- VMARK V.PTR D@ DDUP E.PTR D!        
+  VDP D@ D- ." MESSAGE LENGTH: "  D. ."  BYTES." CR             
+  ." OPTIONS:    LL  SAVEIT" CR ;                               
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                

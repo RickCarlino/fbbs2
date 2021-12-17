@@ -1,0 +1,16 @@
+\ Load screen for FORTH BBS               26nov84tjb  15MAY85JAP
+ 15 VIEWS FBBS2.BLK    .( LOADING )  FILE? CR                   
+: GOODBYE  BYE ;                                                
+   3 4 THRU     \  5 6 THRU  \ Virtual I/O                      
+  7 25 THRU                                                     
+  S-S FBBS2.COM   EXIT                                          
+\ 26 36 THRU  EXIT  data packing  ( SYSCALL is undefined JP)    
+To begin the BBS type:   INIT-BBS which is the same as below.   
+  OPEN FBBS2.DAT    FBBS   0 IS VBLK   and  START or SAFER      
+Safer allows only BBS commands, and protects the system from the
+user.  Type TPEE to return to Forth.  Type READ BBS to start at 
+the trunk of the tree.  READ HELP or READ COMMANDS are good too.
+See also: STOP PACK INPORT EXPORT REMOVE MOVETO                 
+   When I compile FBBS2.BLK and start it FIND-NAME never does!, 
+however there is a working version called FBBS1.COM on this disk
+that runs on top of F83 1.0.0                                   

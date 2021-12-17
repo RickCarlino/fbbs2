@@ -1,0 +1,16 @@
+\  more vm i/o                                        03dec84tjb
+                                                                
+ CREATE HEADER 25 ALLOT  2VARIABLE HADDR                        
+                                                                
+: HEADER@ 2DUP HADDR 2!  VADDR RES @ 25 > IF                    
+  HEADER 25 CMOVE HADDR 2@ >NAME V.PTR 2! ELSE HADDR 2@         
+  V.PTR 2! HEADER 25 + HEADER DO V> I C! LOOP THEN ;            
+                                                                
+: HEADER! V.PTR 2!  HEADER 25 + HEADER DO I C@ >V LOOP ;        
+: HADDR!  HADDR 2@ HEADER! ;                                    
+: >HEADER DUP 2+ @ HEADER +  SWAP @ DUP 4 = IF DROP 2! ELSE     
+  2 = IF ! ELSE C! THEN THEN ;                                  
+: HEADER>  DUP 2+ @ HEADER + SWAP @ DUP 4 = IF DROP 2@ ELSE     
+  2 = IF  @  ELSE  C@ THEN THEN ;                               
+: CLR-HEADER HEADER 25 + HEADER DO 0 I C! LOOP ;                
+                                                                

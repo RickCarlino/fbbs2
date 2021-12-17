@@ -1,0 +1,16 @@
+\ The LIST function (reads current message)           03dec84tjb
+                                                                
+: K?    KEY? IF KEY 31 AND DUP 11 = ABORT" killed. "  19 =      
+          IF KEY DROP THEN THEN ; ( K to kill or S to pause )   
+ \ K? is case and control independent  any S or K will do       
+: TYPER  BEGIN K? V> DUP 127 AND DUP EMIT                       
+  13 = IF 10 EMIT THEN 127 > UNTIL ;                            
+                                                                
+: TYPE-LINE BEGIN V> DUP 127 AND DUP 13 = IF DROP 128 OR        
+  ELSE EMIT THEN 127 > UNTIL CR ;                               
+: INCU  USAGE HEADER> 1+ USAGE >HEADER HADDR 2@ HEADER! ;       
+: .HEAD  CUR-MSG 2@ HEADER@ INCU CR ." PARENT: " PARENT HEADER> 
+  >NAME V.PTR 2! TYPER 40 TAB DATE HEADER> ." DATE: " .DATE     
+  CR CUR-MSG 2@  >NAME V.PTR 2! ." MESSAGE: " TYPER             
+  40 TAB USAGE HEADER>  ." USAGE: " U. CR CR ;                  
+                                                                

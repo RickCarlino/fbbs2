@@ -1,0 +1,16 @@
+\ Some Vars and virtual stuff  * NOT IN USE *         15MAY85JAP
+ 2VARIABLE VDP       2VARIABLE V.PTR                            
+ 0. VDP 2!           0. V.PTR 2!                                
+0 CONSTANT VBLK  VARIABLE RES   128. 2CONSTANT VOFF             
+: V+ V.PTR DUP 2@ 1. D+ ROT 2! ;                                
+: V- V.PTR DUP 2@ -1. D+ ROT 2! ;                               
+: VADDR ( d--n) VOFF D+  1KU/MOD VBLK + BLOCK                   
+  OVER 1024 SWAP - RES !  + ;                                   
+: V@ ( d--c)  VADDR C@ ;                                        
+: V! ( c d --) VADDR C! UPDATE ;                                
+: >V ( c --) V.PTR 2@ V! V+ ;                                   
+: V> ( -- c) V.PTR 2@ V@ V+ ;                                   
+: V  V.PTR 2@ ;                                                 
+                                                                
+                                                                
+                                                                

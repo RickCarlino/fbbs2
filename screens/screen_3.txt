@@ -1,0 +1,16 @@
+\ LIST OF WORDS KNOT KNOWN BY LP-83 2.1.0             15MAY85JAP
+ ONLY FORTH ALSO                                                
+VOCABULARY FBBS  FBBS DEFINITIONS ALSO                          
+: OPENFILE   [ DOS ] OPEN-FILE  ;                               
+: UWORD      WORD  DUP COUNT UPPER  ;                           
+: TEXT      HERE C/L 1+   BLANK UWORD   PAD C/L 1+ CMOVE ;      
+: TAB ( n--)  #OUT @ - DUP 0> IF SPACES ELSE DROP THEN ;        
+: 2AND  (S d d -- d ) 2 ROLL AND ROT ROT AND SWAP ;             
+: 2NOT  (S d -- d )   NOT SWAP NOT SWAP ;                       
+: "FBBS2.DAT"  ( --  addr len ) " FBBS2.DAT" ;                  
+: OPEN-DATA  ( -- )  ['] "FBBS2.DAT" IS SOURCE  >IN OFF         
+  OPEN ['] (SOURCE) IS SOURCE ;                                 
+: INIT-BBS  OPEN-DATA   START ;                                 
+                                                                
+                                                                
+                                                                

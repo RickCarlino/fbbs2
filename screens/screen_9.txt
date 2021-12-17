@@ -1,0 +1,16 @@
+\ Routine to show whats in the header                 03dec84tjb
+                                                                
+: HEADER?  CR                                                   
+  ."  haddr: "  HADDR 2@ D. CR                                  
+  ."   date: " DATE HEADER> .DATE CR                            
+  ." length: " LENGTH HEADER> D. CR                             
+  ." parent: " PARENT HEADER> D. CR                             
+  ." younger: " YOUNGER HEADER> D. CR                           
+  ."  older:  " OLDER HEADER> D. CR                             
+  ." daughter: "  DAUGHTER HEADER> D. CR                        
+  ." usage: " USAGE HEADER> U. CR                               
+  ." file type: " FILE-TYPE HEADER> U. CR                       
+  ." cur-msg: "  CUR-MSG 2@ D. CR                               
+  ." vdp:   " VDP 2@ D. CR CR ;                                 
+: CUR-HEAD?  CUR-MSG 2@ HEADER@ HEADER? ;                       
+                                                                

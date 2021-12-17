@@ -1,0 +1,16 @@
+\ COMPRESSION/FORMATING )                             03dec84tjb
+                                                                
+: TY.R  OVER - SPACES TYPE ;                                    
+: DATE>  ( mm/dd/yy -- u )  100 UM/MOD 0 100 UM/MOD             
+   32 * + SWAP 416 * + ; ( this is sortable)                    
+: >MDY  ( U -- yy dd mm) 0 416 UM/MOD SWAP 32 /MOD ;            
+: >DATE ( u -- mm/dd/yy)  >MDY  100 * +  100 UM* ROT 0 D+ ;     
+: .DATE  ( u -- )  SPACE  >DATE                                 
+   <# # # 47 HOLD # # 47 HOLD # # #> TYPE SPACE ;               
+                                                                
+      \s                                                        
+\ : TRUE 1 ;    : FALSE 0 ;                                     
+                                                                
+                                                                
+                                                                
+                                                                

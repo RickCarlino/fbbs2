@@ -1,0 +1,16 @@
+\ multi-char VM I/0                       03dec84tjb            
+  2VARIABLE CUR-MSG                                             
+  2VARIABLE NEW.PTR   2VARIABLE SCAN-ROOT                       
+ 0. CUR-MSG 2!                                                  
+ VARIABLE TODAY                                                 
+  CREATE  DATE       2 ,   0 ,                                  
+  CREATE  LENGTH     4 ,   2 ,                                  
+  CREATE  PARENT     4 ,   6 ,                                  
+  CREATE  YOUNGER    4 ,  10 ,                                  
+  CREATE  OLDER      4 ,  14 ,                                  
+  CREATE  DAUGHTER   4 ,  18 ,                                  
+  CREATE  USAGE      2 ,  22 ,                                  
+  CREATE  FILE-TYPE  1 ,  24 ,                                  
+                                                                
+: >NAME  25. D+ ;                                               
+                                                                

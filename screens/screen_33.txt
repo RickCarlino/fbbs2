@@ -1,0 +1,16 @@
+\  back pointer fixer upper                           03dec84tjb
+                                                                
+                                                                
+: FIX-DTRS  CUR-MSG 2@ 2DUP HEADER@ DAUGHTER HEADER> BEGIN      
+  2DUP D0= NOT WHILE   HEADER@ OLDER >HEADER HADDR! HADDR 2@    
+  YOUNGER HEADER> REPEAT  2DROP 2DROP ;                         
+                                                                
+: FIX-BACK  0.  2DUP CUR-MSG 2! SCAN-ROOT 2!  BEGIN             
+  FIX-DTRS NEXT-MSG 0= UNTIL CR ;                               
+                                                                
+: LIST-PHYS  CR 0. CUR-MSG 2!  BEGIN  CUR-MSG 2@ VDP 2@ D=      
+  NOT WHILE CUR-MSG 2@ 2DUP HEADER@ TYPER 35 TAB D. 50 TAB      
+  LENGTH HEADER> 2DUP D. CR                                     
+  CUR-MSG 2@ D+ CUR-MSG 2! REPEAT ;                             
+                                                                
+                                                                

@@ -1,0 +1,16 @@
+\ stuff for findin things by name                     03dec84tjb
+  CREATE NAME-BUF  40 ALLOT  VARIABLE NAME-LEN                  
+                                                                
+: ?NAME   BL TEXT  PAD 1+ NAME-BUF 40 CMOVE                     
+   NAME-BUF  40 -TRAILING DUP 0= ABORT" bad name"               
+   DUP NAME-LEN ! 1-  + DUP C@ 128 OR SWAP C!                   
+   BL WORD NUMBER? DROP DATE> SINCE ! ;                         
+                                                                
+: -NAME >NAME V.PTR 2! 1 NAME-BUF DUP NAME-LEN @ +              
+  SWAP DO I C@ V> = AND DUP 0= IF LEAVE THEN LOOP ;             
+                                                                
+: FIND-NAME  0. 2DUP CUR-MSG 2! SCAN-ROOT 2!                    
+  BEGIN CUR-MSG 2@ -NAME IF 0 EXIT THEN NEXT-MSG 0= UNTIL 1 ;   
+                                                                
+                                                                
+                                                                

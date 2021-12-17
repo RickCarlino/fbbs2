@@ -1,0 +1,16 @@
+\  words used by PACK                                 03dec84tjb
+  2VARIABLE  T.BASE  2VARIABLE T.PTR  VARIABLE #MSGS            
+                                                                
+: T.PTR+  T.PTR 2@ 4. D+  T.PTR 2! ;                            
+: >TABLE  T.PTR 2@ VADDR 2! UPDATE T.PTR+ ;                     
+: TABLE>  T.PTR 2@ VADDR 2@ T.PTR+ ;                            
+                                                                
+: MAKE-TABLE  VDP 2@  8. D+ 7. 2NOT   2AND  2DUP                
+  T.BASE  2!  T.PTR  2!  0. CUR-MSG 2!  0 #MSGS !               
+  BEGIN  CUR-MSG 2@ 2DUP >TABLE >TABLE 1 #MSGS +!               
+  NEXT-MSG 0= UNTIL -1. >TABLE  -1. >TABLE                      
+  CR  #MSGS @ . ." messages in tree" CR ;                       
+                                                                
+: IN-TBL?  T.BASE 2@ T.PTR 2!  BEGIN 2DUP  TABLE> D= NOT        
+  WHILE TABLE> 0. D< IF  0 EXIT THEN REPEAT  1 ;                
+\ syntax = ( d -- d f)                                          

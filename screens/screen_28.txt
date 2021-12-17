@@ -1,0 +1,16 @@
+\ more words for pack                                 03dec84tjb
+   2VARIABLE SRC.PTR  2VARIABLE DES.PTR                         
+                                                                
+ : >DES  DES.PTR 2@ V!  DES.PTR DUP 2@ 1. D+ ROT 2! ;           
+: SRC+  SRC.PTR DUP 2@ LENGTH HEADER> D+ ROT 2! ;               
+: >>DES  ( d.src d.cnt )                                        
+  BEGIN  2DUP 0. D> WHILE  2SWAP 2DUP                           
+  V@ >DES  1. D+ 2SWAP 1. D- REPEAT 2DROP 2DROP  ;              
+                                                                
+: SQUISH  0. HEADER@ LENGTH HEADER> 2DUP SRC.PTR 2!             
+  DES.PTR 2!  #MSGS @ 1 DO  42 EMIT                             
+  SRC.PTR 2@  BEGIN  2DUP HEADER@ IN-TBL? 0= WHILE 45 EMIT      
+  LENGTH HEADER> 2+ REPEAT  SRC.PTR 2! DES.PTR 2@ >TABLE        
+  CR SRC.PTR 2@ D.   DES.PTR 2@ D.                              
+  SRC.PTR 2@ LENGTH HEADER> >>DES  SRC+ LOOP DES.PTR 2@ VDP 2! ;
+                                                                

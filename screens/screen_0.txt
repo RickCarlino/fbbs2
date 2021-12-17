@@ -1,0 +1,16 @@
+FORTH Bulletin Board, with data in a separate file.   15MAY85JAP
+You can run the BBS from your keyboard.  "Screen 31   EXPERIMENT
+must be modified for your system to pack the data."             
+  The orginal concept execution and code is Jeff's.  I started  
+the conversion from MVP to F83, but Tom actually succeded.  You 
+may see my initials on the ID date but let me assure you it is  
+Jeffs progrm.                                                   
+                         John Peters, F83 Disk Librarian        
+                            (415) 239-5393 after 7 pm.          
+                                                                
+  Jeff Wilson  WA2KCM           Tom Belpasso                    
+  55 Bedford Ave.               852-116 Minnesota Avenue        
+  Bergenfield NJ 07621          San Jose, CA 95125              
+  (201) 384-1596  MVP version   (408) 292-0352  LP F-83 version 
+                                                                
+                                                                

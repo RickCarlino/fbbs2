@@ -1,0 +1,16 @@
+\ more words for pack                                 03dec84tjb
+                                                                
+: FIND-LINK  IN-TBL? 0= IF ." WARNING! bad link: " D. CR        
+  0. 2SWAP  THEN  2DROP ;                                       
+: SET-NEW  ( old, new--) 2SWAP  FIND-LINK  >TABLE ;             
+                                                                
+: NEW-LINK ( old -- new)   FIND-LINK  TABLE> ;                  
+                                                                
+                                                                
+: NEW-LINKS  ( d --)   HEADER@                                  
+  PARENT  HEADER> NEW-LINK PARENT >HEADER                       
+  DAUGHTER HEADER> NEW-LINK DAUGHTER >HEADER                    
+  YOUNGER  HEADER> NEW-LINK YOUNGER >HEADER                     
+  OLDER  HEADER> NEW-LINK  OLDER >HEADER  HADDR! ;              
+                                                                
+                                                                

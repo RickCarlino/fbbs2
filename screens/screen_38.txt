@@ -1,0 +1,16 @@
+\ start of file maintainence                          03dec84tjb
+                                                                
+: DE-LINK   CUR-MSG 2@ HEADER@ PARENT HEADER> OLDER HEADER>     
+  D= IF YOUNGER HEADER> 2DUP PARENT HEADER> HEADER@ DAUGHTER    
+  >HEADER  HADDR! 2DUP D0= IF 2DROP ELSE HEADER@ PARENT HEADER> 
+  OLDER >HEADER HADDR! THEN                                     
+ ELSE YOUNGER HEADER> 2DUP OLDER HEADER>  HEADER@ YOUNGER       
+  >HEADER HADDR!  D0= NOT IF  HADDR 2@ YOUNGER HEADER>          
+  HEADER@  OLDER >HEADER HADDR! THEN  THEN ;                    
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                

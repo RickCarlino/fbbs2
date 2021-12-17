@@ -1,0 +1,16 @@
+\ a simple editor                                     03dec84tjb
+  2VARIABLE  E.PTR                                              
+: VMARK  V- V> 128 OR V- >V ;                                   
+                                                                
+: LINE>V QUERY 1 WORD COUNT DUP >R                              
+   0 ?DO DUP C@ >V 1+ LOOP                                      
+  DROP CR  13 >V R> ;                                           
+                                                                
+: MNH   ( Message Name Header )                                 
+       VDP 2@  2DUP NEW.PTR 2! >NAME 2DUP VADDR DROP V.PTR 2!   
+  SET-DATE  ." MESSAGE NAME? " QUERY 32 UWORD COUNT 32 MIN      
+  DUP 0= ABORT" bad name"                                       
+  0 DO DUP C@  >V 1+ LOOP DROP VMARK CR ;                       
+                                                                
+                                                                
+                                                                

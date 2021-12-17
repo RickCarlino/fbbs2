@@ -1,0 +1,16 @@
+\ high-speed vm i/o    * NOT IN USE *      03dec84tjb 15MAY85JAP
+\ CODE 1KU/MOD   ( d -- n n )                                   
+\  D POP  H POP  B PUSH    ( save bc we need the room )         
+\  H A MOV  3 ANI  A B MOV  L C MOV  B PUSH ( REMAINDER)        
+\  H L MOV  E H MOV  D E MOV  0 D MVI  ( /256 )                 
+\  STC CMC  ( reset cy flag )                                   
+\  E A MOV  RAR  A E MOV  H A MOV  RAR  A H MOV                 
+\  L A MOV  RAR  A L MOV               ( D/2 )                  
+\  STC CMC  ( reset cy flag )                                   
+\  E A MOV  RAR  A E MOV  H A MOV  RAR  A H MOV                 
+\  L A MOV  RAR  A L MOV               ( D/2 )                  
+\  D POP  B POP  D PUSH  ( fix up stack push remainder )        
+\  HPUSH JMP  C;      ( push divident )                         
+\ or in high level                                              
+: 1KU/MOD  ( d -- n n )  OVER 1023 AND ROT ROT                  
+     10 0 DO D2/ LOOP  DROP ; \ dividend on top                 

@@ -1,0 +1,16 @@
+FORTH Bulitin Board System (FBBS)         15JAN85JAP  15MAY85JAP
+I can't get it to compile of F83 2.1.2  (See FBBS1.COM it works)
+                                                                
+Screen 2 is ideas, 3 is patches to F83 to match M.V.P. Forth.   
+4-25 is code for basic BBS  26-36 file handling stuff(untested) 
+Data in the tree is now in a separate file.  You can run FBBS2  
+.COM from your keyboard.  Screen 31 must be modified for your   
+system. To allow for a larger BBS, change construct VBLK to 0   
+and use a new file.  The BBS is in a seperate vocabulary, FBBS. 
+   To begin the BBS type:                                       
+         FBBS   0 IS VBLK   and  START or SAFER                 
+SAFER allows only BBS commands, and protects the system from the
+user.  Type TPEE to return to FORTH.  Type READ BBS to start.   
+READ HELP or READ COMMANDS are good too.                        
+                                                                
+                                                                

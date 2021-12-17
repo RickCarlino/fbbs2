@@ -1,0 +1,16 @@
+\ BBS TOOLS                                           17oct84jap
+                                                                
+: CUR?   CUR-HEAD? ;                                            
+: NPAR    PARENT >HEADER ;                                      
+: NYOUNG  YOUNGER >HEADER ;                                     
+: NKID    DAUGHTER >HEADER ;                                    
+: UNUSED  0 USAGE >HEADER ;                                     
+: NOLDER  OLDER >HEADER ;                                       
+: CUR!    CUR-MSG D@ HEADER! ;                                  
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                

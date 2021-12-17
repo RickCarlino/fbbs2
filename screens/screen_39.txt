@@ -1,0 +1,16 @@
+\ more file maintanence                               03dec84tjb
+                                                                
+: REMOVE  FINDER CUR-MSG 2@ NEW.PTR 2! DE-LINK CR ;             
+                                                                
+: MOVETO FINDER SET-LINKS CR ;                                  
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                

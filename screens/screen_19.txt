@@ -1,0 +1,16 @@
+\ some real stuff                                     03dec84tjb
+: FINDER ?NAME FIND-NAME  IF ." <-- message not in tree."       
+  ABORT THEN CR ; : GOTO  FINDER ;                              
+: READ  FINDER .HEAD  TYPER   SUB-MSG ;                         
+: R  READ ;                                                     
+: BROWSE FINDER .HEAD  TYPE-LINE CR  SUB-MSG ;                  
+                                                                
+: ADDTO  FINDER ED ;                                            
+                                                                
+: INDEX  FINDER  CUR-MSG 2@ 2DUP SCAN-ROOT 2! HEADER@  0 LEVEL !
+  DAUGHTER HEADER> D0= ABORT" nothing to index"                 
+  BEGIN NEXT-MSG WHILE CUR-MSG 2@ HEADER@ DATE HEADER> SINCE @  
+  U< NOT IF LEVEL @ 2* SPACES CUR-MSG 2@ HEADER@                
+  TYPER 40 TAB DATE HEADER> .DATE 55 TAB USAGE HEADER> .        
+  LENGTH HEADER> 65 TAB D. CR  THEN  REPEAT CR ;                
+                                                                

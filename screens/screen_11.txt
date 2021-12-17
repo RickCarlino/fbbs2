@@ -1,0 +1,16 @@
+\ routines used to set up the header                  03dec84tjb
+                                                                
+: >DTR CUR-MSG 2@ HEADER@ DAUGHTER HEADER> CUR-MSG 2! ;         
+                                                                
+: YOUNGEST  \ find youngest sister of cur-msg                   
+  BEGIN  CUR-MSG 2@ HEADER@ YOUNGER HEADER> 2DUP D0= NOT        
+  WHILE CUR-MSG 2! REPEAT 2DROP ;                               
+                                                                
+                                                                
+: INIT-BBS  0. VDP 2!  0. CUR-MSG 2! ;                          
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                

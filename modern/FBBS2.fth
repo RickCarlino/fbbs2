@@ -13,7 +13,6 @@ Jeffs progrm.
   Bergenfield NJ 07621          San Jose, CA 95125
   (201) 384-1596  MVP version   (408) 292-0352  LP F-83 version
 
-
 \ Load screen for FORTH BBS               26nov84tjb  15MAY85JAP
  15 VIEWS FBBS2.BLK    .( LOADING )  FILE? CR
 : GOODBYE  BYE ;
@@ -60,8 +59,6 @@ VOCABULARY FBBS  FBBS DEFINITIONS ALSO
   OPEN ['] (SOURCE) IS SOURCE ;
 : INIT-BBS  OPEN-DATA   START ;
 
-
-
 \ COMPRESSION/FORMATING )                             03dec84tjb
 
 : TY.R  OVER - SPACES TYPE ;
@@ -74,9 +71,6 @@ VOCABULARY FBBS  FBBS DEFINITIONS ALSO
 
       \s
 \ : TRUE 1 ;    : FALSE 0 ;
-
-
-
 
 \ high-speed vm i/o    * NOT IN USE *      03dec84tjb 15MAY85JAP
 \ CODE 1KU/MOD   ( d -- n n )
@@ -107,8 +101,6 @@ VOCABULARY FBBS  FBBS DEFINITIONS ALSO
 : >V ( c --) V.PTR 2@ V! V+ ;
 : V> ( -- c) V.PTR 2@ V@ V+ ;
 : V  V.PTR 2@ ;
-
-
 
 \ multi-char VM I/0                       03dec84tjb
   2VARIABLE CUR-MSG
@@ -163,7 +155,6 @@ VOCABULARY FBBS  FBBS DEFINITIONS ALSO
 : START OPENFILE VBLK BLOCK 2@ VDP 2!   0. CUR-MSG 2!
   VBLK BLOCK 4 + @ TODAY ! ;
 
-
 : STOP  VDP 2@ VBLK BLOCK 2!
   TODAY @ VBLK BLOCK 4 + ! UPDATE FLUSH ;
 
@@ -171,7 +162,6 @@ VOCABULARY FBBS  FBBS DEFINITIONS ALSO
   ." Hit <cr> if correct, else enter new mmddyy: "
   QUERY  BL WORD NUMBER? DROP DATE> DUP 0= IF NOT ELSE TODAY !
   0 THEN UNTIL CR ;
-
 
 
 \ routines used to set up the header                  03dec84tjb
@@ -182,16 +172,9 @@ VOCABULARY FBBS  FBBS DEFINITIONS ALSO
   BEGIN  CUR-MSG 2@ HEADER@ YOUNGER HEADER> 2DUP D0= NOT
   WHILE CUR-MSG 2! REPEAT 2DROP ;
 
-
 : INIT-BBS  0. VDP 2!  0. CUR-MSG 2! ;
 
-
-
-
-
-
 \ header-related things                               03dec84tjb
-
 
 : SET-LINKS   NEW.PTR 2@ HEADER@ CUR-MSG 2@  PARENT >HEADER
   NEW.PTR 2@ HEADER!  CUR-MSG 2@ HEADER@ DAUGHTER HEADER>
@@ -237,15 +220,12 @@ VOCABULARY FBBS  FBBS DEFINITIONS ALSO
   0 DO DUP C@  >V 1+ LOOP DROP VMARK CR ;
 
 
-
 \ MESSEGE ENTRY RELATED STUFF                         03dec84tjb
-
 
 : ED  MNH   ." Press  CR twice to exit editor" CR CR
   BEGIN  LINE>V  0= UNTIL V- VMARK V.PTR 2@ 2DUP E.PTR 2!
   VDP 2@ D- ." MESSAGE LENGTH: "  D. ."  BYTES." CR
   ." OPTIONS:    LL  SAVEIT" CR ;
-
 
 : LL  NEW.PTR 2@  >NAME V.PTR 2! CR ." name:  " TYPER CR CR
   TYPER CR ;
@@ -264,11 +244,6 @@ VOCABULARY FBBS  FBBS DEFINITIONS ALSO
   HADDR 2@ >NAME V.PTR 2! TYPER
   35 TAB DATE HEADER> .DATE CR THEN
   YOUNGER HEADER> 2DUP D0= UNTIL 2DROP THEN CR ;
-
-
-
-
-
 
 \ scanning the tree                                   03dec84tjb
    VARIABLE  LEVEL
@@ -301,7 +276,6 @@ VOCABULARY FBBS  FBBS DEFINITIONS ALSO
   BEGIN CUR-MSG 2@ -NAME IF 0 EXIT THEN NEXT-MSG 0= UNTIL 1 ;
 
 
-
 \ some real stuff                                     03dec84tjb
 : FINDER ?NAME FIND-NAME  IF ." <-- message not in tree."
   ABORT THEN CR ; : GOTO  FINDER ;
@@ -329,26 +303,11 @@ VOCABULARY FBBS  FBBS DEFINITIONS ALSO
   HEADER@  OLDER >HEADER HADDR! THEN  THEN ;
 
 
-
-
-
-
-
 \ more file maintanence                               03dec84tjb
 
 : REMOVE  FINDER CUR-MSG 2@ NEW.PTR 2! DE-LINK CR ;
 
 : MOVETO FINDER SET-LINKS CR ;
-
-
-
-
-
-
-
-
-
-
 
 \  Z80 SIO WORDS                          21oct84jap  18may85jap
 \ MODIFIED FOR MORROW DECISION'S 8251
@@ -380,8 +339,6 @@ VOCABULARY FBBS  FBBS DEFINITIONS ALSO
 : HELP CR ." type READ HELP if you need help." CR ;
 
 
-
-
 \  limiting the trouble we get into                   21oct84jap
 
 : TPEE    \ this is the command to return to forth
@@ -394,8 +351,6 @@ CREATE CMDS  ' READ ,  ' BROWSE , ' INDEX , ' NN ,  ' HELP ,
 12 CONSTANT #CMDS
 
 : CMD-OK? 0 #CMDS 0 DO OVER I 2* CMDS + @  = OR LOOP ;
-
-
 
 
 \  limiting the trouble we get into                   15MAY85JAP
@@ -438,13 +393,11 @@ CREATE CMDS  ' READ ,  ' BROWSE , ' INDEX , ' NN ,  ' HELP ,
 
 : NEW-LINK ( old -- new)   FIND-LINK  TABLE> ;
 
-
 : NEW-LINKS  ( d --)   HEADER@
   PARENT  HEADER> NEW-LINK PARENT >HEADER
   DAUGHTER HEADER> NEW-LINK DAUGHTER >HEADER
   YOUNGER  HEADER> NEW-LINK YOUNGER >HEADER
   OLDER  HEADER> NEW-LINK  OLDER >HEADER  HADDR! ;
-
 
 \ more words for pack                                 03dec84tjb
    2VARIABLE SRC.PTR  2VARIABLE DES.PTR
@@ -477,7 +430,6 @@ CREATE CMDS  ' READ ,  ' BROWSE , ' INDEX , ' NN ,  ' HELP ,
   DUP  2@ D. 4 +  2@ D. CR LOOP CR ;
 
 
-
 \  file i/o to cp/m
 
  CREATE SECBUF 128 ALLOT  VARIABLE DCNT
@@ -493,20 +445,13 @@ CREATE CMDS  ' READ ,  ' BROWSE , ' INDEX , ' NN ,  ' HELP ,
 
 : READF  READ-FILE READIT ;
 
-
 \  file i/o to cp/m                                   03dec84tjb
-
 
 : IMPORT  READ-FILE   MNH
   BEGIN 26 SECBUF SYSCALL DROP
   20 PAD SYSCALL 0= WHILE 128 0 DO SECBUF I +  C@
   127 AND DUP 10 = IF DROP ELSE DUP 26 = IF DROP LEAVE ELSE
   >V THEN THEN LOOP  REPEAT VMARK V.PTR 2@ E.PTR 2! CR ;
-
-
-
-
-
 
 
 
@@ -525,9 +470,7 @@ CREATE CMDS  ' READ ,  ' BROWSE , ' INDEX , ' NN ,  ' HELP ,
   >DISK 127 > UNTIL WR-SEC  16 PAD SYSCALL DROP ;
 
 
-
 \  back pointer fixer upper                           03dec84tjb
-
 
 : FIX-DTRS  CUR-MSG 2@ 2DUP HEADER@ DAUGHTER HEADER> BEGIN
   2DUP D0= NOT WHILE   HEADER@ OLDER >HEADER HADDR! HADDR 2@
@@ -541,7 +484,6 @@ CREATE CMDS  ' READ ,  ' BROWSE , ' INDEX , ' NN ,  ' HELP ,
   LENGTH HEADER> 2DUP D. CR
   CUR-MSG 2@ D+ CUR-MSG 2! REPEAT ;
 
-
 \ MESSAGE MOVING WORDS
 
 : TYPE>V   (S addr --   | puts memory into virtual )
@@ -553,10 +495,6 @@ CREATE CMDS  ' READ ,  ' BROWSE , ' INDEX , ' NN ,  ' HELP ,
   QUERY INTERPRET TYPE>V V- VMARK V.PTR D@ DDUP E.PTR D!
   VDP D@ D- ." MESSAGE LENGTH: "  D. ."  BYTES." CR
   ." OPTIONS:    LL  SAVEIT" CR ;
-
-
-
-
 
 \ BBS TOOLS                                           17oct84jap
 
@@ -568,12 +506,6 @@ CREATE CMDS  ' READ ,  ' BROWSE , ' INDEX , ' NN ,  ' HELP ,
 : NOLDER  OLDER >HEADER ;
 : CUR!    CUR-MSG D@ HEADER! ;
 
-
-
-
-
-
-
 \ MESSAGE MOVING WORDS
 
 : TYPE>V   (S addr --   | puts memory into virtual )
@@ -586,10 +518,6 @@ CREATE CMDS  ' READ ,  ' BROWSE , ' INDEX , ' NN ,  ' HELP ,
   VDP D@ D- ." MESSAGE LENGTH: "  D. ."  BYTES." CR
   ." OPTIONS:    LL  SAVEIT" CR ;
 
-
-
-
-
 ����������������������������������������������������������������
 ����������������������������������������������������������������
 ����������������������������������������������������������������
@@ -598,12 +526,6 @@ CREATE CMDS  ' READ ,  ' BROWSE , ' INDEX , ' NN ,  ' HELP ,
 ����������������������������������������������������������������
 ����������������������������������������������������������������
 ����������������������������������������������������������������
-
-
-
-
-
-
 
 
 \ start of file maintainence                          03dec84tjb
@@ -617,26 +539,11 @@ CREATE CMDS  ' READ ,  ' BROWSE , ' INDEX , ' NN ,  ' HELP ,
   HEADER@  OLDER >HEADER HADDR! THEN  THEN ;
 
 
-
-
-
-
-
 \ more file maintanence                               03dec84tjb
 
 : REMOVE  FINDER CUR-MSG 2@ NEW.PTR 2! DE-LINK CR ;
 
 : MOVETO FINDER SET-LINKS CR ;
-
-
-
-
-
-
-
-
-
-
 
 FORTH Bulitin Board System (FBBS)         15JAN85JAP  15MAY85JAP
 I can't get it to compile of F83 2.1.2  (See FBBS1.COM it works)
@@ -652,7 +559,6 @@ and use a new file.  The BBS is in a seperate vocabulary, FBBS.
 SAFER allows only BBS commands, and protects the system from the
 user.  Type TPEE to return to FORTH.  Type READ BBS to start.
 READ HELP or READ COMMANDS are good too.
-
 
 \ Load screen for FORTH BBS               26nov84tjb  15MAY85JAP
  15 VIEWS BBS2.BLK    .( LOADING )  FILE? CR
@@ -671,17 +577,6 @@ is Jeffs progrm.         John Peters, F83 Disk Librarian
   Bergenfield NJ 07621          San Jose, CA 95125
   (201) 384-1596  MVP version   (408) 292-0352  LP F-83 version
                                                       15MAY85JAP
-
-
-
-
-
-
-
-
-
-
-
 
 
 

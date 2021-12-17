@@ -1,0 +1,16 @@
+\  limiting the trouble we get into                   21oct84jap
+                                                                
+: TPEE    \ this is the command to return to forth              
+   ['] (?ERROR) IS ?ERROR STOP CR TRUE ABORT" back to forth" ;  
+                                                                
+CREATE CMDS  ' READ ,  ' BROWSE , ' INDEX , ' NN ,  ' HELP ,    
+  ' TALK , ' BYE ,                                              
+  ' TPEE ,  ' ADDTO , ' SAVEIT , ' LL , ' REMOVE ,              
+  ' MOVETO ,                                                    
+12 CONSTANT #CMDS                                               
+                                                                
+: CMD-OK? 0 #CMDS 0 DO OVER I 2* CMDS + @  = OR LOOP ;          
+                                                                
+                                                                
+                                                                
+                                                                

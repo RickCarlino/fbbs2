@@ -1,0 +1,16 @@
+\ START STOP SET-DATE                                 03dec84tjb
+                                                                
+: START OPENFILE VBLK BLOCK 2@ VDP 2!   0. CUR-MSG 2!           
+  VBLK BLOCK 4 + @ TODAY ! ;                                    
+                                                                
+                                                                
+: STOP  VDP 2@ VBLK BLOCK 2!                                    
+  TODAY @ VBLK BLOCK 4 + ! UPDATE FLUSH ;                       
+                                                                
+: SET-DATE   BEGIN CR ." system date is " TODAY @ .DATE CR      
+  ." Hit <cr> if correct, else enter new mmddyy: "              
+  QUERY  BL WORD NUMBER? DROP DATE> DUP 0= IF NOT ELSE TODAY !  
+  0 THEN UNTIL CR ;                                             
+                                                                
+                                                                
+                                                                

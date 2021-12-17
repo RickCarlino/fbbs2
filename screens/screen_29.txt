@@ -1,0 +1,16 @@
+\  PACK                                               03dec84tjb
+                                                                
+: RE-LINK   #MSGS @ 0 DO  I 8 UM* T.BASE 2@ D+ 4. D+ VADDR 2@   
+  NEW-LINKS  LOOP ;                                             
+                                                                
+: PACK  CR ." are you sure? " KEY 89 = NOT ABORT" pack aborted."
+  CR ." making link table"  MAKE-TABLE                          
+  CR ." squishing the tree" CR SQUISH                           
+  CR ." reseting links"  RE-LINK                                
+  CR ." all done!" CR ;                                         
+                                                                
+: .TABLE  CR #MSGS @ 0 DO I 8 UM* T.BASE 2@ D+ VADDR            
+  DUP  2@ D. 4 +  2@ D. CR LOOP CR ;                            
+                                                                
+                                                                
+                                                                

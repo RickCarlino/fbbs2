@@ -1,0 +1,16 @@
+\ header-related things                               03dec84tjb
+                                                                
+                                                                
+: SET-LINKS   NEW.PTR 2@ HEADER@ CUR-MSG 2@  PARENT >HEADER     
+  NEW.PTR 2@ HEADER!  CUR-MSG 2@ HEADER@ DAUGHTER HEADER>       
+  D0= IF  NEW.PTR 2@ DAUGHTER >HEADER CUR-MSG 2@ HEADER!        
+  NEW.PTR 2@ HEADER@ CUR-MSG 2@ OLDER >HEADER ELSE >DTR         
+  YOUNGEST NEW.PTR 2@ YOUNGER >HEADER HADDR!                    
+  NEW.PTR 2@ HEADER@ CUR-MSG 2@ OLDER >HEADER THEN              
+  0. YOUNGER >HEADER  NEW.PTR 2@ HEADER!  ;                     
+                                                                
+: DO-HEADER ( d --) \ set up header for new message             
+  CLR-HEADER  TODAY @ DATE >HEADER                              
+  VDP 2@ NEW.PTR 2@ D- LENGTH >HEADER                           
+  1 FILE-TYPE >HEADER NEW.PTR 2@ HEADER! SET-LINKS ;            
+                                                                

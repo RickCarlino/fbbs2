@@ -1,0 +1,16 @@
+\  file i/o to cp/m                                   03dec84tjb
+                                                                
+: WR-SEC  26 SECBUF SYSCALL DROP  21 PAD SYSCALL 0=             
+  NOT  ABORT" ERROR: disk full" ;                               
+                                                                
+: >DISK  DCNT @ DUP 128 U< IF SECBUF + C! 1 DCNT +! ELSE        
+  DROP  0 DCNT ! WR-SEC SECBUF 128 26 FILL THEN ;               
+                                                                
+: EXPORT   13 0 SYSCALL DROP  14 0 SYSCALL DROP ?FILE           
+  22 PAD SYSCALL  4 >  ABORT" disk directory full"              
+  CUR-MSG 2@ >NAME V.PTR 2! ." exporting " TYPER CR             
+  0 DCNT !  BEGIN V> DUP 127 AND DUP 13 = IF 10 >DISK THEN      
+  >DISK 127 > UNTIL WR-SEC  16 PAD SYSCALL DROP ;               
+                                                                
+                                                                
+                                                                

@@ -1,0 +1,16 @@
+\  Z80 SIO WORDS                          21oct84jap  18may85jap
+\ MODIFIED FOR MORROW DECISION'S 8251                           
+  HEX                                                           
+                                                                
+\ CREATE SIO$  1818 , 1 , 4C04 , 5103 , EA05 ,                  
+  FC CONSTANT ADAT   FD CONSTANT BDAT                           
+  FF CONSTANT ACON   FF CONSTANT BCON                           
+                                                                
+: SINIT         ;                                               
+ \       SIO$ DUP 0A + SWAP DO I C@ BCON PC! LOOP ;             
+: MSTAT    0FF PC@  ;                                           
+: DCD?    MSTAT  80 AND ; \ 10 BCON PC!  BCON PC@ 8 AND 8 = ;   
+                                                                
+\ BAUD 12C = IF 5 ELSE 7 THEN 0C PC! ;                          
+                                                                
+ DECIMAL                                                        

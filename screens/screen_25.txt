@@ -1,0 +1,16 @@
+\  limiting the trouble we get into                   15MAY85JAP
+: GET-CMD                                                       
+   DEFINED  NOT  ABORT" What??? " ;                             
+                                                                
+: RUNBBS  BEGIN   CR ." COMMAND? " QUERY   GET-CMD              
+  CMD-OK? NOT                                                   
+    IF ."  BBS CMDS ONLY " HELP DROP ELSE EXECUTE THEN AGAIN ;  
+                                                                
+: (?BBSERROR)   (S adr len f -- )                               
+   IF  >R >R   SP0 @ SP!                                        
+       R> R> SPACE TYPE SPACE RUNBBS                            
+   ELSE  2DROP  THEN  ;                                         
+                                                                
+: SAFER  ['] (?BBSERROR) IS ?ERROR  START  ONLY FBBS ALSO       
+   TRUE  ABORT" enter TPEE to return to forth " ;               
+\S **** End of the first part of the BBS, less File maintenance.

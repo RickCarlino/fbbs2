@@ -1,0 +1,16 @@
+\ more modem/serial support                           21oct84jap
+: GEMIT  DUP (EMIT) <MEMIT> ;                                   
+: SHARE   CHAT ; \ ' GKEY CFA 'KEY !  ' GEMIT CFA 'EMIT !       
+: TALK  CR ." Use control C to exit talk mode" CR               
+  BEGIN  MKEY DUP GEMIT 13 = IF 10 EMIT THEN AGAIN ;            
+                                                                
+: BYE  ." so long!" CR  SHARE BEGIN DCD? NOT UNTIL              
+  BEGIN KEY? ABORT" BROKE" DCD? UNTIL SINIT KEY KEY 2DROP       
+."  Welcome to Jeff's bulletin board!" CR                       
+." type READ BBS to start,  READ HELP for help" CR CR ;         
+                                                                
+: HELP CR ." type READ HELP if you need help." CR ;             
+                                                                
+                                                                
+                                                                
+                                                                

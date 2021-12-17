@@ -1,0 +1,16 @@
+\ mods to F83-FORTH version               08dec84tjb  15MAY85JAP
+                                                                
+ 1) The first block of the virtual memory is the value of  the  
+    constant VBLK.  Default value is 40 to allow both the source
+    and BBS to reside in the same file to facilitate debuging.  
+    You can dedicate a seperate file for the BBS messages by    
+    changing the value of VBLK to 0.  I added a double precision
+    constant VOFF to allow greater flexablity for the virtual   
+    memory support.                                             
+ 2) K? is now case and control key insensitive, ie. upper, lower
+    or control K will kill the message.  The same for S to pause
+ 3) Pack, import and export are untested and not loaded with OK.
+                                                            TOM 
+    P! and P@ changed to PC! and PC@ in this file.              
+    I am unable to compile a working system on F83 2.1.2   JP   
+                                                                

@@ -1,0 +1,16 @@
+\ scanning the tree                                   03dec84tjb
+   VARIABLE  LEVEL                                              
+                                                                
+: NEXT-MSG ( --f)   CUR-MSG 2@ HEADER@ DAUGHTER HEADER>         
+  2DUP D0= NOT IF CUR-MSG 2!  1 LEVEL +!  1 ELSE  2DROP         
+  YOUNGER HEADER> 2DUP D0= NOT IF CUR-MSG 2! 1 ELSE 2DROP BEGIN 
+  PARENT HEADER> 2DUP CUR-MSG 2! -1 LEVEL +! 2DUP SCAN-ROOT     
+  2@ D= IF 2DROP 0 1 ELSE HEADER@ YOUNGER HEADER> 2DUP D0= NOT  
+  IF CUR-MSG 2! 1 1 ELSE 2DROP 0 THEN THEN K? UNTIL THEN THEN ; 
+    \ K? allows user to escape long searches                    
+: NN 0. SCAN-ROOT 2! NEXT-MSG IF .HEAD TYPER SUB-MSG ELSE       
+  CR ." nothing more to read" CR THEN ;                         
+                                                                
+: BB CUR-MSG 2@ HEADER@ OLDER HEADER> CUR-MSG 2!                
+  .HEAD TYPER SUB-MSG ;                                         
+                                                                

@@ -1,0 +1,16 @@
+\ submessage function                                 03dec84tjb
+                                                                
+   VARIABLE  SINCE                                              
+                                                                
+: SUB-MSG CR CR  CUR-MSG 2@ HEADER@ DAUGHTER HEADER> 2DUP  D0=  
+  IF 2DROP ." no submessages"  ELSE ." SUBMESSAGES: " CR        
+  BEGIN HEADER@ DATE HEADER>  SINCE @ U< NOT IF                 
+  HADDR 2@ >NAME V.PTR 2! TYPER                                 
+  35 TAB DATE HEADER> .DATE CR THEN                             
+  YOUNGER HEADER> 2DUP D0= UNTIL 2DROP THEN CR ;                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                

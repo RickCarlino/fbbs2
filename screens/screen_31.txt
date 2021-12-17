@@ -1,0 +1,16 @@
+\  file i/o to cp/m                                   03dec84tjb
+                                                                
+                                                                
+: IMPORT  READ-FILE   MNH                                       
+  BEGIN 26 SECBUF SYSCALL DROP                                  
+  20 PAD SYSCALL 0= WHILE 128 0 DO SECBUF I +  C@               
+  127 AND DUP 10 = IF DROP ELSE DUP 26 = IF DROP LEAVE ELSE     
+  >V THEN THEN LOOP  REPEAT VMARK V.PTR 2@ E.PTR 2! CR ;        
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                
+                                                                

@@ -1,0 +1,16 @@
+\ MESSEGE ENTRY RELATED STUFF                         03dec84tjb
+                                                                
+                                                                
+: ED  MNH   ." Press  CR twice to exit editor" CR CR            
+  BEGIN  LINE>V  0= UNTIL V- VMARK V.PTR 2@ 2DUP E.PTR 2!       
+  VDP 2@ D- ." MESSAGE LENGTH: "  D. ."  BYTES." CR             
+  ." OPTIONS:    LL  SAVEIT" CR ;                               
+                                                                
+                                                                
+: LL  NEW.PTR 2@  >NAME V.PTR 2! CR ." name:  " TYPER CR CR     
+  TYPER CR ;                                                    
+: LIST  LL ;                                                    
+: SAVEIT  E.PTR 2@ VDP 2!  DO-HEADER CR ;                       
+: SAVEPERMANENT  SAVEIT ;                                       
+: S   SAVEIT ;                                                  
+                                                                

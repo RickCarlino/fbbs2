@@ -1,0 +1,16 @@
+\  file i/o to cp/m                                             
+                                                                
+ CREATE SECBUF 128 ALLOT  VARIABLE DCNT                         
+                                                                
+: ?FILE   ?NAME  PAD 33 0 FILL PAD 1+ 11 BLANK                  
+  NAME-LEN @ 0 DO I NAME-BUF + C@ 127 AND I PAD + 1+ C! LOOP ;  
+                                                                
+: READ-FILE  ?FILE  15 PAD SYSCALL 4 > ABORT" file not found" ; 
+                                                                
+: READIT CR  BEGIN 26 SECBUF SYSCALL DROP  20 PAD SYSCALL 0=    
+  WHILE  SECBUF 128 + SECBUF DO  I C@ DUP 26 =                  
+  IF DROP CR ." EOF" LEAVE ELSE EMIT THEN LOOP  REPEAT ;        
+                                                                
+: READF  READ-FILE READIT ;                                     
+                                                                
+                                                                
