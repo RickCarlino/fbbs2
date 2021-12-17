@@ -14,6 +14,8 @@ Not much else is known about it at this time. File timestamps and log comments s
  * `pristine/` Unchanged source code for historic preservation purposes.
  * `modern/` Work in progress. A modernized version of the source code that someday will run on modern systems or emulators. We're not sure yet.
 
+The soon-to-be-working source code can be found in `pristine/FBBS2.fth`
+
 ## Run / Build Instructions
 
 Unknown at this time
