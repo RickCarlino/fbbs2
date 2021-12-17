@@ -1,0 +1,381 @@
+             Documentation for FBBS-2.0  ** 1/26/85  **  page 1
+
+
+            Purpose
+            -------
+              FBBÓ  standó  foò FORTÈ Bulletin-Boarä System¬   anä ió  á 
+            publiã  domaiî  tree-structureä  systeí  modeleä  afteò  thå 
+            Communi-treå  system®   Thå purposå iî placinç thió codå  iî 
+            thå publiã domaiî ió NOÔ tï providå á general-purposå do-alì 
+            BBÓ foò freå foò everyonå foò everù computer¬  buô ratheò tï 
+            providå á basiã systeí witè thå capabilitù tï bå expandeä iî 
+            almosô anù direction®   É wilì trù tï answeò questions¬  buô 
+            otheò thaî that¬  É caî offeò littlå oò nï freå supporô  foò 
+            thió system.
+
+              Tï  thoså whï wisè tï alteò thió systeí anä selì it¬  feeì 
+            freå tï dï so®  Iæ yoõ makå á loô oæ moneù anä feeì á littlå 
+            guilty, feel free also to send me some royalties.
+
+
+            General
+            -------
+              Iæ yoõ nï littlå oò nothinç abouô tree-structureä BBS's¬ É 
+            stronglù adviså thaô yoõ spenä aî houò oò twï oî onå oæ  thå 
+            communitreå boardó (theù arå listeä iî Thå Computeò Shopper© 
+            tï  geô á feeì foò whaô ió goinç on®   Thå basiã premiså  ió 
+            thaô  eacè  messagå  iî thå treå ió appendeä tï  somå  otheò 
+            messagå  (itó parent©  anä may¬  iî turn¬  havå onå oò  morå 
+            messageó  appendeä  tï iô (itó  sub-messages)®   Theså  sub-
+            messageó  caî havå therå owî sub-messageó anä  sï  on®   Thå 
+            top-mosô  messagå  iî  thå treå woulä normallù havå  aó  itó 
+            submessageó  alì thå currenô majoò topicó iî thå tree®  Eacè 
+            oæ  theså  topicó coulä havå á lisô oæ commentó  abouô  thaô 
+            topic¬ anä thå commentó coulä havå comments¬ etc® etc.
+
+              Therå  ió onå uniquå messagå iî thå Tree¬  anä thaô ió  aô 
+            thå toğ oæ thå tree®   Thió messagå ió uniquå iî thaô iô haó 
+            nï parenô  (i.e® iô waó noô addeä tï anotheò message)®  Wheî 
+            thå  Treå ió firsô broughô up¬   thå routinå  ENTER-TOĞ  in-
+            itializeó thå systeí  anä allowó yoõ tï enteò thió  message®  
+            Alì  otheò messageó iî thå systeí arå addeä tï thió oò  somå 
+            otheò messagå usinç thå ADDTÏ <msg-name¾ command.
+
+
+              Thå  commandó  (oò fortè lexicons© iî thió systeí  maù  bå 
+            spliô intï therå groups:
+
+                 1© Useò commands
+
+                 2© Sysoğ commands
+
+                 3© Internaì commands.
+
+              Thå normaì useò woulä uså onlù thoså commandó foò reading¬ 
+            indexing¬  anä findinç messages®  Thå Sysoğ commandó includå 
+            thoså foò messagå removal¬  restructurinç thå tree¬  anä foò 
+            disë compaction®  Tï perforí theså commands¬  á largå seô oæ 
+            internaì commandó arå used¬  whicè neitheò thå sysoğ noò thå Š
+
+
+
+
+
+
+
+             Documentation for FBBS-2.0  ** 1/26/85  **  page 2
+
+
+            useò  neeä bå concerneä about®   Programmeró caî builä  morå 
+            useò  and/oò  sysoğ  functionó bù combininç  theså  internaì 
+            commands.
+
+              Unlikå FBBS-1.0¬  nothinç aó systeí dependenô aó  limitinç 
+            whicè functionó caî bå executeä haó beeî implemented®  This¬ 
+            aó  welì aó sucè thingó aó modeí interface¬  arå lefô tï thå 
+            enä user.
+
+
+            Useò commands:
+            -------------
+              Theså  arå fe÷ iî numbeò anä general-purposå iî naturå  tï 
+            makå usinç thå boarä aó simplå aó possible:
+
+
+            REAÄ <msg-name>  [date]
+            -----------------------
+               Thió  ió thå mosô commoî function¬  anä ió  ratheò  self-
+            explanatory® Á headinç ió printed¬  thå bodù oæ thå message¬ 
+            anä á lisô oæ anù submessages®   Thå outpuô maù bå pauseä bù 
+            hittinç anù key¬ oò terminateä bù hittinç K.
+              Iæ á datå ió supplied¬   onlù submessageó oî oò afteò thaô 
+            datå will be listed.
+
+
+            BROWSÅ <msg-name> [date]
+            ------------------------
+              Thió ió jusô likå read¬ excepô thaô onlù thå firsô linå oæ 
+            thå messagå ió printed.
+
+            ADDTÏ <msg-name>
+            ----------------
+              Thió  functioî ió foò addinç á sub-messagå tï aî  existinç 
+            message®   Iæ  thå directorù oò thå disë ió full¬  aî  erroò 
+            messagå wilì result®   Yoõ wilì bå askeä tï givå thå messagå 
+            á name¬   whicè maù bå uğ tï 3° characteró iî lengtè (longeò 
+            nameó wilì bå truncated)®   Thå namå maù noô contaiî spaces®    
+            Afteò  enterinç  thå name¬   alì lineó typeä iî wilì  becomå 
+            parô  oæ thå messagå untiì aî emptù linå  ió  entered®   Thå 
+            onlù  editinç provideä ió back-space®   Iæ yoõ wisè tï imbeä 
+            blanë lineó iî youò message¬  puô á spacå iî thå linå beforå 
+            hittinç  <cr¾  again®   Therå ió nï  limitatioî  oî  messagå 
+            lengtè iî thió systeí otheò thaî disë capacity.
+              Afteò enterinç aî emptù line¬  yoõ arå bacë iî thå regulaò 
+            mode.
+
+
+            INDEØ <msg-name>  [date]
+            ------------------------
+              Thió  functioî provideó á methoä oæ viewinç thå  structurå 
+            oæ  thå  treå belo÷ á certaiî message®   INDEØ FBBÓ   (wherå 
+            FBBÓ  ió  thå  toğ messagå iî thå tree©   wilì  displaù  thå 
+            structurå  oæ  thå entirå tree®   Eacè successivå  leveì  oæ 
+            commentó ió indenteä ² spaceó froí itó parent.Š
+
+
+
+
+
+
+
+             Documentation for FBBS-2.0  ** 1/26/85  **  page 3
+
+
+              Iæ  á datå ió supplied¬   onlù messageó aoî oò afteò  thaô 
+            date will be listed.
+
+
+            HELP
+            ----
+              Thió jusô printó "trù REAÄ HELP¢  HELĞ ió á sysop-provideä 
+            messagå thaô maù contaiî alì oò parô oæ thió document® 
+
+
+            Sysoğ Commands
+            --------------
+              Again¬  theså arå noô toï complicateä oò numerous¬ anä maù 
+            bå extendeä aó needed® É calì theí sysoğ commandó becauså iô 
+            may not be desired to give the users this much power.
+
+
+            START
+            -----
+              Wheî yoõ starô uğ thió system¬  thió commanä ió needeä  tï 
+            loaä á fe÷ variableó froí disk
+
+            REMOVÅ  <msg-name>
+            ------------------
+              Self-explanatory®    Botè  <msg-name¾   anä  anù  messageó 
+            appendeä  tï iô arå removed¬   anä thå associateä  directorù 
+            spacå (buô noô disë space© ió reclaimed®  Á trağ ió provideä 
+            tï prevenô removinç thå toğ oæ thå tree.
+
+            CRUNCH
+            ------
+              Thió commanä reclaimó anù disë spacå freeä viá REMOVE®  Iô 
+            ió slow¬  anä shoulä noô bå useä wheî noô needed®  Á staò ió 
+            printeä aó eacè messagå ió crunched.
+
+
+            MOVÅ <msg-name¾ TÏ <msg-name>
+            -----------------------------
+              Thió  commanä allowó á messagå tï bå reassigneä tï anotheò 
+            parent¬   thuó  allowinç  yoõ tï movå á messagå tï   á  morå 
+            appropriatå  sectioî oæ thå treå iæ required®   Alì  submes-
+            sageó appendeä tï thå messagå arå moveä also®   Á commoî uså 
+            woulä bå tï movå á messagå tï á parenô calleä GOING..® prioò 
+            tï removinç iô tï givå useró somå warning.
+
+            ENTER-TOP
+            ---------
+              Thió commanä ió dangerous¬ aó iô wilì wipå thå treå clean®  
+            Iô ió tï bå useä onlù tï enteò thå firsô messagå iî thå treå 
+            (iô ió á littlå difficulô tï uså ADDTÏ wheî therå ió nothinç 
+            tï addto).
+
+            RE-ENTEÒ <msg-name>
+            -------------------
+              Normally¬  iæ yoõ enteò á messagå incorrectly¬ anä wisè tï Š
+
+
+
+
+
+
+
+             Documentation for FBBS-2.0  ** 1/26/85  **  page 4
+
+
+            changå it¬   yoõ woulä uså REMOVÅ anä ADDTO®  Iæ thå messagå 
+            iî questioî haä submessages¬   theù woulä bå lost®  RE-ENTEÒ 
+            allowó yoõ tï enteò ne÷ texô foò aî exitinç messagå  withouô 
+            loosinç  thå submessages®   Thió ió particularlù usefuì  foò 
+            changinç thå texô aô thå toğ oæ thå tree.
+
+            Internals:
+            ----------
+              Uså  thå  commentó iî thå sourcå codå aó  á  primarù  ref-
+            erence¬  aó  É maù stilì makå somå changes®   É wilì trù  tï 
+            highlighô á fe÷ thingó herå thaô seeí á littlå obtuse.
+
+
+            #BLOCKS¬ DIR¬ #DIÒ anä TREE
+            ---------------------------
+              Theså  constantó  yoõ wilì likelù wisè tï change®   Aó  iô 
+            stands¬   botè thå sourcå codå anä thå treå datá arå iî  thå 
+            samå filå tï makå developmenô easier®   Mosô useró wilì wanô 
+            tï  uså á workinç filå aó largå aó possible¬  generallù  thå 
+            sizå oæ onå floppù disë oî á floppù system®   Changå #BLOCKÓ 
+            tï  thå  capacitù oæ thaô filå  (oò tï thå capacitù oæ  youò 
+            drivå systeí iæ yoõ arå usinç direcô disk-i/o)®  Iæ yoõ wanô 
+            tï  keeğ thå sourcå oî line¬   seô  DIÒ tï 40¬  leavinç  thå 
+            firsô 4° blockó oæ thå filå freå tï holä thå  code®   Other-
+            wise¬  seô DIÒ tï ° anä bå careful.
+
+              Thå resô oæ thå disë ió spliô intï twï parts¬  á directorù 
+            areá  anä á datá area®   Iæ eitheò areá getó full¬  thå treå 
+            wilì bå ablå tï accepô nï morå data®  Yoõ shoulä chooså #DIÒ 
+            sucè  thaô botè areaó filì uğ aô abouô thå  samå  rate®  Thå 
+            besô numbeò tï uså iî dependenô oî thå averagå messagå size®  
+            É  woulä suggesô ² oò ³ directorù slotó foò eacè 1ë oæ  datá 
+            area®   Sincå  therå  arå  abouô 2² directorù slotó iî  á  á 
+            block¬  thió  wilì  takå  uğ 10-15¥ oæ  thå  disë  anä  wilì 
+            generallù be enough unless the messages are very short.
+
+              Thå constantó #BYTEÓ anä TREÅ arå calculateä automaticallù 
+            durinç compilå anä telì thå £ oæ byteó iî thå datá areá  anä 
+            blocë thaô thaô areá starts.
+             
+
+            Data structures
+            ---------------
+              Oæ  theså  therå  arå two®   Thå firsô ió  á  fixed-lengtè 
+            directory record, and the second is the body of the message.
+
+              Eacè messagå iî thå treå ió jusô á simplå ascié file¬ witè 
+            thå lineó endinç iî CRLÆ witè  EOÆ (26h© markinç thå enä  oæ 
+            thå file®   Again¬  therå iî nï reaì restrictioî oî thå sizå 
+            oæ  thå  messagå  otheò  theî  disë  space®    Iæ   yoõ  arå 
+            perceptive¬   yoõ  maù  noticå  thió  ió  exactlù  thå  samå 
+            structurå  aó á cp/í texô file®   Notå thaô yoõ cannoô storå 
+            coí  fileó iî thió structure¬  aó theù maù contaiî EOF'ó  iî 
+            baä places.
+Š
+
+
+
+
+
+
+
+             Documentation for FBBS-2.0  ** 1/26/85  **  page 5
+
+
+              Thå directorù recorä containó thå namå oæ thå  message¬  á 
+            fe÷ usefuì fieldó sucè aó usage¬ datå anä length¬  á pointeò 
+            tï wherå thå texô oæ thå messagå resides¬  anä ³ pointeró tï 
+            otheò recordó tï forí thå treå structurå (parent¬  daughter¬ 
+            anä sister)®  Notå thaô therå arå pointeró tï records®  Thió 
+            meanó  shufflinç  thå  recordó abouô ió á  reaì  no-no®   Aó 
+            directorù slotó becomå availablå wheî messageó arå  removed¬ 
+            theù  arå  kepô tracë oæ bù á linkeä lisô witè thå  variablå 
+            MT.PTR pointing to the most recently freed slot.
+              Notå  alsï  thaô  thå 3² biô pointeò tï thå  texô  oæ  thå 
+            messagå  ió thå onlù direcô referencå tï thaô  message.  Alì 
+            otheò  referenceó shoulä bå madå thrõ thå  directory®   Thió 
+            allowó  messageó  tï  bå  moveä  wheî  thå  disë  ió   beinç 
+            compacted.
+
+
+            Tree Structure
+            --------------
+              Iæ  you'vå eveò donå aî INDEØ <msg-name¾ thå structurå  oæ 
+            thå treå ió obvious®   Eacè messagå haó á parent®  Thå firsô 
+            sub-messagå  oæ á messagå ió it'ó daughter®   Tï achivå  thå 
+            effecô  oæ unlimiteä numbeò oæ daughters¬  thå daughteò  caî 
+            poinô  tï á youngeò sister®   Thå youngesô sist4. TUTOR.LBR and HELP.BLK also some documentation files.        5. FBBS Forth based BBS with source.  Two revisions.            6. F83 Text and Documentation files collection.                 7. Library files A-I  (Files used every day are kept on one of) 8. Library files J-P  (the above working disks.  These are)     9. Library files Q-Z  (new to me or I don't have room above.)   Send a SASE for a index list with citations.  Include a letter  or a dollar.  John A. Peters 121 Santa Rosa Ave, SF, CA 94112   :
+
+              1) If there is a daughter, it becomes the new message
+
+              2) Iæ therå ió nï daughter¬ puô therå ió á youngeò sister¬ 
+                 iô  becomeó thå nexô message.
+
+              3) Iæ therå arå neitheò gï uğ thå treå untiì á parenô witè 
+                 á  youngeò sisteò ió found¬  whicè wilì becomå thå nexô 
+                 message®   Iæ nï youngeò sisteò caî bå found¬  returî á 
+                 zerï tï indicatå thaô thå treå ió exhausted.
+
+
+            CRUNCHing the disk
+            ------------------
+              Thió  ió  littlå  biô complicated¬  buô stilì  onlù  threå 
+            screenó wortè oæ complicated®  Thå ideá behinä crunchinç thå 
+            disë  ió tï takå alì thå messageó anä rearrangå theí  but-uğ 
+            againsô onå another¬   makinç alì thå emptù spacå contiguouó 
+            anä  readù foò morå messages®   Thió ió donå bù  buildinç  á 
+            lisô  oæ  eacè  oæ thå currentlù  occupieä  directorù  slotó 
+            sorteä  bù  thå addresó oæ thå messagå  (BUILD-LIST)®   Witè Š
+
+
+
+
+
+
+
+             Documentation for FBBS-2.0  ** 1/26/85  **  page 6
+
+
+            thió list¬   CRUNCÈ caî movå eacè oæ thå messageó tï thå lo÷ 
+            enä  oæ thå file¬  updatinç thå thå addresó pointeró oî  thå 
+            fly®    Afteò  doinç alì this¬  wå updatå END.PTÒ sï wå  caî 
+            make use of the space we freed.
+
+            Customization:
+            --------------
+              Yoõ maù havå noticeä morå thaî á fe÷ thingó havå beeî lefô 
+            ouô  oæ thå code¬  sucè aó bullet-proofinç anä modeí  inter-
+            face®   É consideò thió sorô oæ thinç tï bå system-dependenô 
+            anä noô reallù alì thaô difficulô tï program®   Thió codå ió 
+            thå  meaô  oæ á bbó (iî á reasonabllù smalì  anä  digestablå 
+            portion)¬ yoõ maù seasoî iô tï youò owî taste.
+
+              Iæ yoõ neeä somå hints¬   É havå ideaó (anä á littlå code©  
+            foò  everythinç froí archivaì tï passwordó tï  multi-taskinç 
+            tï user-logons.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
