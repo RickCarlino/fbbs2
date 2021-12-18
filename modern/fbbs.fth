@@ -3,7 +3,7 @@
 : UPPER ." MISSING UPPER" ;
 : #OUT ." MISSING #OUT" ;
 : NOT ." MISSING NOT" ;
-: OPEN ." MISSING NOT" ;
+: OPEN ." MISSING OPEN" ;
 \ ===== END STUBS =====
 
 ONLY FORTH ALSO
