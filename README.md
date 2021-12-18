@@ -1,7 +1,11 @@
-# Forth BBS 2 (1985)
+# Forth BBS 2 (1984-1985)
 
 A reconstruction of a historic Forth BBS system.
-Not much else is known about it at this time. File timestamps and log comments seem to hint that the BBS was used around 1985 and ran on DOS (which DOS?).
+Not much else is known about it at this time. File timestamps and log comments seem to hint that the BBS was used around 1985 and ran on unconfirmed flavor of DOS.
+
+## Project Status
+
+The source code does not yet run. We are actively reconstructing the software to run on modern hardware and would like to eventually host an instance of the BBS publicly.
 
 ## Goals
 
@@ -14,8 +18,14 @@ Not much else is known about it at this time. File timestamps and log comments s
  * `pristine/` Unchanged source code for historic preservation purposes.
  * `modern/` Work in progress. A modernized version of the source code that someday will run on modern systems or emulators. We're not sure yet.
  * `screens/` The original screen files split and formatted in a way that can be easily viewed on modern systems.
+   * `screens_all.txt` is all screens formatted and concatenated into a single file.
+   * See `pristine/fbbs.scr` for the original version of the file.
 
-The soon-to-be-working source code can be found in `pristine/FBBS2.fth`
+The soon-to-be-working source code can be found in `modern/fbbs.fth`
+
+## Resources
+
+ * ["Inside Forth 83" By: Dr. C. H. Ting](http://forth.org/OffeteStore/1003_InsideF83.pdf) - A very detailed introduction to F83 for those of us who learned Forth in the 21st century.
 
 ## Run / Build Instructions
 
