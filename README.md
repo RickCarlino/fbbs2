@@ -17,6 +17,10 @@ Not much else is known about it at this time. File timestamps and log comments s
 
 The soon-to-be-working source code can be found in `pristine/FBBS2.fth`
 
+## Resources
+
+ * ["Inside Forth 83" By: Dr. C. H. Ting](http://forth.org/OffeteStore/1003_InsideF83.pdf) - A very detailed introduction to F83 for those of us who learned Forth in the 21st century.
+
 ## Run / Build Instructions
 
 Unknown at this time
