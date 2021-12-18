@@ -1,0 +1,3 @@
+*.fth linguist-language=Forth
+*.scr linguist-language=Forth
+*.SCR linguist-language=Forth
