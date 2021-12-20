@@ -4,7 +4,28 @@
 : #OUT ." MISSING #OUT" ;
 : NOT ." MISSING NOT" ;
 : OPEN ." MISSING OPEN" ;
+: (SOURCE) ." MISSING SOURCE " ;
+: START ." MISSING START" ;
+: VADDR ." MISSING VADDR" ;
+: RES ." MISSING RES" ;
+: V.PTR ." MISSING V.PTR" ;
+: V> ." MISSING V>" ;
+: V ." MISSING V" ;
+: >V ." MISSING >V" ;
+: VDP ." MISSING VDP" ;
+: VBLK ." MISSING VBLK" ;
+: V- ." MISSING V-" ;
+: PC@ ." MISSING PC@" ;
+: (?ERROR) ." MISSING (?ERROR)" ;
+: ?ERROR ." MISSING ?ERROR" ;
+: <MEMIT> ." I think this word is 'modem emit'." ;
+: CHAT ." This is a modem word, probably." ;
+: MKEY ." Possible meaning: 'modem key'" ;
 \ ===== END STUBS =====
+
+\ ==== Words missing from standard GForth:
+: 2+ 2 + ;
+\ ==== END GFORTH ADDITIONS
 
 ONLY FORTH ALSO
 VOCABULARY FBBS FBBS DEFINITIONS ALSO
@@ -297,7 +318,9 @@ CREATE CMDS ' READ , ' BROWSE , ' INDEX , ' NN , ' HELP ,
 
 \ limiting the trouble we get into   15MAY85JAP
 : GET-CMD
-DEFINED NOT ABORT" What??? " ;
+  \ DEFINED NOT ABORT" What??? "
+  ." This word needs to be re-writte. - RC 20 DEC 21 "
+  BYE ;
 
 : RUNBBS BEGIN CR ." COMMAND? " QUERY GET-CMD
 CMD-OK? NOT
@@ -310,4 +333,3 @@ ELSE 2DROP THEN ;
 
 : SAFER ['] (?BBSERROR) IS ?ERROR START ONLY FBBS ALSO
 TRUE ABORT" enter TPEE to return to forth " ;
-\S **** End of the first part of the BBS, less File maintenance.
