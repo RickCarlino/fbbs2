@@ -26,6 +26,7 @@ The soon-to-be-working source code can be found in `modern/fbbs.fth`
 ## Resources
 
  * ["Inside Forth 83" By: Dr. C. H. Ting](http://forth.org/OffeteStore/1003_InsideF83.pdf) - A very detailed introduction to F83 for those of us who learned Forth in the 21st century.
+ * [The Forth 83 Standard, Converted to HTML](http://forth.sourceforge.net/standard/fst83/) - We may want to run the various test files at the bottom of the page to verify compatibility. I have added it to this project as `f83.txt` for easier `grep`ing.
 
 ## Run / Build Instructions
 
