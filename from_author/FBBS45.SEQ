@@ -1,0 +1,776 @@
+\ FBBS46.SEQ version 4.3 of FORTH BBS program for f-pc   Oct 04, 1992
+comment:
+This is a FORTH based BBS.  It modeled after a BBS program called Comunitree
+written by John James over a decade ago.  The tree structure makes much more
+sense for finding information on an unlimited number of topics.
+This a modification of Jeff Wilsons version 2 FBBS.
+
+By the way my name is Tom Belpasso, 852 Minnesota #116, San Jose, CA 95125
+
+Version 4.3  11/22/91 tjb
+ Added NRUN command to read next message if empty line is entered
+ Added AUTOREAD command that redirects RUN to use NRUN
+  NOTE: f-pc editor resets RUN to <RUN>
+ Made a new NUF? that uses a FBBS variable, #LINE instead of FORTH's #LINE
+   because #LINE in F-PC's moves the cursor.
+ I have also made a new CR in the FBBS vocabulary to use the #LINE
+ New INDEX that takes a max level on the stack only if there is one item
+ RE-NAME substitutes blanks in message names with underscores
+
+Version 4 enhansements include:
+ .NAME now does underscore substitution in display of message names, they are
+   replaced by blanks to make message titles look cleaner.
+
+ MAKE-HEAD now will accept message names that contain blanks and convert them
+  to underbars.
+
+ ADDTO now displays the header of the message you are adding to
+  and the current date, you can cancel if it is the wrong message.
+
+ New command LAST - goes to last message of the current parent.
+
+Version 4.5 changes
+ Factored MAKE-HEAD to remove the part that parses the message name into a
+  separate words GET-NAME gets message name into pad and MAKE-HEAD uses the
+  message name in PAD.
+ Changed .DATE into .MSG-DATE to avoid conflict with F-PC .DATE
+
+Version 4.6 changes
+ NUF? now prompts with "[more]"
+ Added AR alias for autoread
+ Fixed the EDIT command's "temp.msg" file name
+
+comment;
+\ things to make the bbs go on f-PC                    04/08/91
+' <RUN> IS RUN                          \ Prevents crashing on re-load
+ANEW FBBS3
+
+11 VALUE KILLKEY                        \ use 'K' for kill key
+27 VALUE ESCAPE
+VARIABLE #LINE                          \ F-PC's moves the cursor
+: 0#LINE!   0 #LINE ! ;
+: CR  1 #LINE +!  CRLF ;                \ Use the FBBS #LINE instead
+
+: KILLKEY?   ( n--f)
+  DUP ESCAPE = ABORT" Escaped"  31 AND KILLKEY = ;
+
+: NUF?  ( --f)                         \ leave true it kill key hit
+  KEY? DUP
+  #LINE @  20 >  OR
+  IF 0#LINE!  DROP  AT?  0 OVER AT ." [more]"
+    HERE 1 (EXPECT)
+    0 OVER AT  7 SPACES AT
+    HERE C@ KILLKEY?
+  THEN ;
+
+\ defining this before loading block.seq will allow dedicated blockhandle
+        1024 constant b/buf             \ length of each block
+           4 constant #buffers          \ number of virtual buffers
+       handle blkhndle
+       blkhndle value blockhandle       \ just use normal file stuff
+
+NEEDS BLOCK
+
+VOCABULARY FBBS
+FBBS DEFINITIONS
+1024 CONSTANT  1K
+  26 CONSTANT  EOF
+  06 CONSTANT  EOT
+
+: BCLOSE  ( -- )  \ CLOSES BLOCK FILE AND EMPTYS BUFFERS
+  BLOCKHANDLE HCLOSE DROP EMPTY-BUFFERS ;
+
+: BOPEN   READ-WRITE  BLOCKHANDLE HOPEN
+  ABORT" failed to open block file" ;
+
+: RE-BOPEN   BCLOSE BOPEN ;
+
+( KEEP THESE SEPARATE, FORTH-79 WORDS )
+: COPY  ( n1 n2 -- )  \ COPIES BLOCK n1 TO n2
+  2 ?ENOUGH FLUSH BUFFER UPDATE  SWAP BLOCK SWAP 1K CMOVE ;
+
+: TEXT  ( c--adr)
+  WORD  PAD 64 BLANK
+  DUP C@ 1+ PAD SWAP CMOVE ;
+
+\ directory record field offsets
+
+   0 CONSTANT /NAME     30 CONSTANT /ADDR
+  34 CONSTANT /LENGTH   36 CONSTANT /DATE
+  38 CONSTANT /USAGE    40 CONSTANT /PARENT
+  42 CONSTANT /SISTER   44 CONSTANT /DAUGHTER
+  46 CONSTANT  R-LEN    22 CONSTANT R/BLK
+  30 CONSTANT  NAME-LEN \ max name length
+
+\ block allocation constants                          012288TJB
+\ change the first three to suit your system
+   0  VALUE  FBBS-DIR       \ first directory block
+   6  VALUE  #BLOCKS   \ # of blocks in working file
+   1  VALUE  TREE      \ and figure 1st block of tree
+
+  TREE FBBS-DIR -  R/BLK *  \ compute # of directory blocks
+      VALUE  #DIR      \ max entries in directory
+
+  #BLOCKS TREE - 1K UM*   \ bytes in the tree
+  2CONSTANT #BYTES
+
+\ define storage                                      012288TJB
+
+   VARIABLE   MT.PTR  \ points to empty directory slot
+   2VARIABLE  RD.PTR   \ for serial file i/o
+   2VARIABLE  WR.PTR   \ for serial file i/o
+   VARIABLE  TODAY
+   VARIABLE  LEVEL  \ level of tree for INDEX
+   VARIABLE  SINCE  \ for restricting dates
+
+\ date compression and formatting                     092089TJB
+
+: DATE>  ( mm/dd/yy -- u )  100  UM/MOD 0 100 UM/MOD
+   32 * + SWAP 416 * + ; ( this is sortable)
+
+: >MDY  ( U -- yy dd mm) 0 416 UM/MOD SWAP 32 /MOD ;
+
+: >DATE ( u -- mm/dd/yy)  >MDY  100 * +  100 UM* ROT 0 D+ ;
+
+: .MSG-DATE  ( u -- )    >DATE
+   <# # # 47 HOLD # # 47 HOLD # # #> TYPE SPACE ;
+
+: .SINCE ( -- )         \ only displays since if set
+    SINCE @ ?DUP
+    IF ."  since " .MSG-DATE ." only" THEN ;
+
+: ?DATE  ( --u)  \ parse off a date, use since as default
+  >IN @  BL WORD DUP C@
+  IF NUMBER?
+    IF  DATE>  NIP  ELSE 2DROP >IN ! SINCE @ THEN
+  ELSE DROP >IN !  SINCE @ THEN ;
+
+\ setting the date
+: GET-DOS-DATE  ( - u )  \ gets the date from DOS into sort format
+  0 0 42 OS2 DROP              \ drop day of week
+  256 /MOD  32 * +             \ month and day
+  SWAP 100 MOD  416 * + ;      \ year
+
+: SET-DATE  ( --)
+  GET-DOS-DATE TODAY !
+  BEGIN  CR ." Current date is: "  TODAY @ .MSG-DATE CR
+\   ." Press <cr> if correct or enter new date mmddyy: "
+0 0 \ QUERY CR ?DATE DUP SINCE @ <>
+  WHILE  TODAY ! REPEAT  DROP ;
+
+\ get/save system vars                                22JAN88TJB
+
+: PUTV  ( --)  \ save system vars
+  FBBS-DIR BLOCK  R/BLK R-LEN * +   \ point to unused part
+  >R  WR.PTR  2@   R@  2!
+  MT.PTR @  R@ 4 + !
+  TODAY @  R@ 6 + !
+  #BLOCKS  R@ 8 + !
+  TREE    R> 10 + !
+  UPDATE FLUSH ;
+
+: START  ( --)  \ get system variables
+  FBBS-DIR BLOCK R/BLK R-LEN * +
+  DUP 2@  WR.PTR 2!
+  DUP 4 + @  MT.PTR !
+  DUP 6 + @  TODAY !
+  DUP 8 + @  =: #BLOCKS
+  10 + @ =: TREE
+  TREE FBBS-DIR -  R/BLK *  =: #DIR
+  #BLOCKS TREE -  1K UM*  ['] #BYTES >BODY 2! ;
+
+: .BLOCKFILE ( -- )
+  BLOCKHANDLE DUP COUNT CR TYPE SPACE  ENDFILE D. ;
+
+: USE   ( - |NAMEOFBLOCKFILE )
+  GFL BL WORD  FLUSH BCLOSE
+  BLOCKHANDLE $>HANDLE READ-WRITE BOPEN
+  .BLOCKFILE  START ;
+
+\ directory access                                    04APR91TJB
+
+: RECORD  ( u--adr) \ this is 1 based
+  1-  R/BLK /MOD FBBS-DIR + BLOCK SWAP R-LEN * + ;
+
+: INIT-TREE  ( --)           \ initialize the tree
+  TREE FBBS-DIR -  R/BLK *  =: #DIR
+  #BLOCKS TREE  DO I BUFFER  \ fill tree with EOF's
+  1K EOF FILL UPDATE LOOP
+  #DIR 0 DO I 1+ I RECORD !  \ make linked list of empties
+  UPDATE LOOP  1 MT.PTR !    \ and point to first
+  0 #DIR RECORD !            \ zero the last slot
+  0.  WR.PTR  2!  PUTV ;
+
+: MORE-TEXT  ( n - )    \ allows adding more blocks for text
+  1 ?ENOUGH  DUP 0>
+  IF #BLOCKS OVER  0 MAX  0
+    ?DO DUP I + BUFFER 1K EOF FILL UPDATE FLUSH LOOP
+    +  =: #BLOCKS  PUTV  RE-BOPEN
+    #BLOCKS TREE - 1K UM*  ['] #BYTES >BODY 2!
+  ELSE DROP THEN ;
+
+: MORE-DIR  ( n - )    \ allows adding more blocks for text
+  1 ?ENOUGH DUP 0>
+  IF CR ." Adding " DUP R/BLK * . ." more message dir slots.  Please wait."
+    TREE #BLOCKS  1-
+    ?DO I OVER + I SWAP COPY -1 +LOOP  \ move message text up
+    DUP #BLOCKS +  =: #BLOCKS  \ update # of blocks
+    DUP TREE +  =: TREE        \ update tree
+    R/BLK *  #DIR + DUP #DIR 1+  \ calculate new # of dir slots
+    DO I 1+ I RECORD !  UPDATE \ make linked list of new empties
+    LOOP  MT.PTR @ 0=          \ check to see if we already ran out
+    IF  #DIR 1+ MT.PTR ! THEN  \ and point to first new one
+    =: #DIR
+    0 #DIR RECORD !           \ zero the last slot
+    PUTV RE-BOPEN
+  ELSE DROP THEN ;
+
+\ CNT-SLOTS                                           22JAN88TJB
+
+: GET-SLOT  ( --n)          \ find an empty directory slot
+  MT.PTR @  DUP  0=
+  IF DROP  2 MORE-DIR  MT.PTR @ THEN  \ add more if needed
+  DUP RECORD  @ MT.PTR ! ;  \ put next empty to MT.PTR
+                                                        \
+: CNT-SLOTS  ( --n)              \ count # of free slots in dir.
+  0  MT.PTR @  BEGIN  DUP WHILE  \ while not last slot
+  SWAP 1+ SWAP                   \ advance count
+  RECORD @ REPEAT DROP ;
+
+: TAB  ( n--)  \ tab over to col. N
+  #OUT @ - SPACES ;
+
+\ directory managment
+
+: ERA-SLOT  ( n--)  \ free up a directory slot
+  MT.PTR  @ OVER RECORD ! UPDATE
+  MT.PTR ! ;
+
+: >PARENT  ( a--b)  \ go to parent message
+  RECORD /PARENT + @ ;
+
+: >DTR  ( a--b)  \ go to daughter
+  RECORD /DAUGHTER + @ ;
+
+: >SISTER  ( a--b)  \ go to sister
+  RECORD /SISTER + @ ;
+
+\ traversing the tree
+
+: >YOUNGEST  ( a--b)  \ go to youngest sister
+  BEGIN  DUP >SISTER ?DUP
+  WHILE SWAP DROP REPEAT ;
+
+: >OLDER  ( a--b)  \ find older sister
+  DUP >R >PARENT >DTR    \ get oldest
+  BEGIN   DUP >SISTER  ?DUP
+  IF R@ <>  ELSE  DROP 0 0 THEN
+  WHILE  >SISTER REPEAT
+  R> DROP ;
+
+\ more directory stuff                                012288TJB
+
+: PARENT!  ( n,rec--)  \ write to parent filed
+  RECORD /PARENT + ! UPDATE ;
+
+: DTR!  ( n,rec--)
+  RECORD /DAUGHTER + ! UPDATE ;
+
+: SISTER!  ( n,rec--)
+  RECORD /SISTER + ! UPDATE ;
+
+: ADDR!  ( d,rec--)
+  RECORD  /ADDR + 2! UPDATE ;
+
+: NAME!  ( $,rec--)  \ put $ to name field
+  RECORD /NAME +  NAME-LEN CMOVE UPDATE ;
+\ more directory stuff                                012288TJB
+
+: DATE@  ( rec--n)
+  RECORD /DATE + @ ;
+
+: DATE!  ( n,rec--)
+  RECORD /DATE + ! UPDATE ;
+
+: USAGE@  ( rec--n)
+  RECORD /USAGE + DUP 1 SWAP +! @ UPDATE ;
+
+: ADDR@  ( rec--adr32)
+  RECORD /ADDR + 2@ ;
+
+\ date check
+
+: DATE-OK?  ( rec--f) \ used for date restrictions
+  ?DUP                         \ return -1 if record # is 0
+  IF DATE@ SINCE @  U< NOT     \ if msg date not before since
+  ELSE TRUE THEN ;
+
+\ link new element into tree                          012288TJB
+
+: CLR-LINKS  ( n--)            \ set all links to 0
+  DUP RECORD  /LENGTH +  \ first field to clear
+  R-LEN /LENGTH -  0 FILL UPDATE
+  TODAY @ SWAP DATE! ;         \ set the date
+
+: SET-LINKS  ( parent,new--)   \ link new element
+  0 OVER SISTER!               \ clear sister of moved msg
+  2DUP  PARENT!                \ tell new item its parent
+  OVER >DTR ?DUP IF            \ if parent has children
+  >YOUNGEST  SISTER!  DROP     \ tell it about new sister
+  ELSE  SWAP DTR! THEN ;       \ else we are only child
+
+\ serial file i/o ; THIS SCREEN WAS DAMAGED           22JAN88TJB
+
+: VADR  ( adr32--adr)  \ convert to virtual address
+  1K   UM/MOD  TREE + BLOCK + ;
+
+: 1.+!  ( n--)  \ inc a 32b variable
+  DUP  2@  1.  D+  ROT  2! ;
+
+( FROM HERE ON WAS DAMAGED, I WILL IMPROVISE )
+: RD-S  ( -- C )  \ READ BYTE FROM VIRTUAL MEMORY
+   RD.PTR 2@  VADR C@  RD.PTR 1.+! ;
+
+: WR-S  ( c -- )  \ writes byte to virtual memory using pointer
+   WR.PTR 2@  VADR  C!  WR.PTR 1.+!  UPDATE ;
+
+\ serial file i/o                                     012288TJB
+
+: TYPE-S   ( adr32--)  \ type message till eof
+  RD.PTR 2!            \ set the pointer
+  BEGIN  RD-S DUP EOF -          \ while no  end-of-file
+  WHILE DUP EMIT
+    10 = IF 1 #LINE +! NUF?
+      IF  EXIT THEN          \ if a K for kill
+    THEN
+  REPEAT DROP ;
+
+comment:  experimental code for outline processing
+: LEV-TAB  LEVEL @  ?DUP IF 0 DO 9 EMIT LOOP  THEN ;
+: TYPE-S   ( adr32--)  \ type message till eof
+  RD.PTR 2!                      \ set the pointer
+  BEGIN  RD-S DUP EOF -          \ while not end-of-file
+  WHILE
+    CASE
+      13 OF CR  LEV-TAB ENDOF
+      10 OF             ENDOF
+      EMIT  DROP
+    ENDCASE
+    NUF?  IF  EXIT THEN          \ if a K for kill
+  REPEAT DROP ;
+comment;
+
+:  INTERPRET-S   ( adr32--)       \ Interpret message as FORTH cmds till eof
+  RD.PTR 2!                      \ set the pointer
+  >IN OFF  TIB
+  BEGIN  RD-S DUP EOF -          \ while not end-of-file
+  WHILE DUP 13 =
+    IF DROP BL OVER C! 1+ TIB - #TIB !
+      INTERPRET >IN OFF #TIB OFF  TIB
+    ELSE  DUP 10 =
+      IF DROP ELSE  OVER C! 1+ THEN
+    THEN
+    NUF?  IF  DROP EXIT THEN    \ if a K for kill
+  REPEAT 2DROP ;
+
+\ more file i/o                                       012288TJB
+
+: WR-CR  ( --)  13 WR-S  10 WR-S ;
+
+: FULL?  ( --f)  \ is disk getting full?
+  WR.PTR 2@  256. D+  #BYTES  D> DUP
+  IF  2 MORE-TEXT DROP FALSE THEN ;
+
+: GET-TEXT  ( --)                 \ to current pointer
+  CR ." Enter an empty line to terminate input" CR CR
+  BEGIN  FULL?  ABORT" disk full"
+    QUERY 1 WORD COUNT DUP 0=
+    IF 2DROP EOF WR-S EXIT THEN     \ if input complete
+    OVER + SWAP
+    DO I C@ WR-S LOOP
+  WR-CR  CR AGAIN ;               \ move it to the file
+
+\ MAKE-HEAD                                           022292TJB
+: S/BL/_  ( a n - )      \ Replace blanks with underbars
+  OVER + SWAP
+  DO I C@  BL =
+    IF ASCII _ I C! THEN
+  LOOP ;
+
+DEFER GET-NAME
+: GET-NAME-KB  ( -- )  \ prompts for message name and stores it in pad
+  CR  ." Message name? "
+  PAD 31 BL FILL            \ Clear out pad
+  PAD 1+  30 EXPECT         \ get 30 char name into PAD
+  PAD 1+ SPAN @  -TRAILING  \ find true length
+  PAD C!  DROP              \ store length for counted string
+\ PAD COUNT UPPER           \ make the name upper case (optional)
+  PAD COUNT S/BL/_          \ replace blanks with underscores
+;
+
+: GET-NAME-DATE             \ PUTS DATE INTO PAD AS MESSAGE NAME
+  PAD 31 BL FILL            \ Clear out pad
+  GETDATE FORM-DATE         \ BUILD DATE
+  DUP C@ 1+ PAD SWAP CMOVE  \ MOVE DATE into PAD
+  PAD COUNT 1+ >R R@ +      \ GET ADDRESS IN PAD AFTER THE DATE
+  GETTIME FORM-TIME         \ GET ADDRESS OF COUNTED TIME STRING
+  COUNT DROP 5              \ TRUNCATE TO MINUTES
+  DUP R> + >R               \ CALCULATE NEW LENGTH
+  ROT SWAP CMOVE            \ MOVE THE TIME TO PAD AFTER THE DATE
+  R> PAD C!                 \ STORE NEW LENGTH IN PAD
+  PAD COUNT S/BL/_          \ REPLACE BLANK WITH UNDERSCORE
+  ;
+
+' GET-NAME-KB IS GET-NAME   \ Use the interactive one as default
+
+: MAKE-HEAD  ( --n)         \ make a directory entry using pad for name
+  GET-SLOT  >R              \ find a directory slot
+  WR.PTR 2@  R@  ADDR!      \ message addr --> directory
+  R@ CLR-LINKS                \ clear links of new item
+  PAD 1+ R@ NAME! R> ;      \ name --> directory
+
+: ENTER-TOP  \ put first message in the tree
+  SET-DATE   INIT-TREE
+  MAKE-HEAD  CLR-LINKS
+  GET-TEXT  TODAY @ 1 DATE!  PUTV ;
+
+\  .NAME  .SUB                                        22jan88tjb
+
+: .NAME  ( n--)  \ print dir# and name of directory entry
+   DUP 3 .R SPACE  RECORD NAME-LEN -TRAILING  BOUNDS
+   DO  I C@ DUP  ASCII _  =
+     IF DROP  BL THEN  EMIT
+   LOOP ;
+
+: .SUBS  ( n--) \ list submessages
+  >DTR  ?DUP
+  IF  ." Submessages" .SINCE ." :" CR
+    BEGIN  DUP DATE-OK? IF  DUP .NAME CR THEN
+      >SISTER DUP 0=  NUF? OR UNTIL DROP
+  ELSE  ." No submessages" CR THEN ;
+
+\  .HEAD                                              22jan88tjb
+
+: .HEAD  ( n--)  \ print a message heading
+  ." Message: "  DUP .NAME  40 TAB
+  ."  Date: "    DUP  DATE@ .MSG-DATE CR
+  ."  Parent: "  DUP >PARENT  ?DUP IF .NAME
+                 ELSE  ." none" THEN 40 TAB
+  ." Usage: "    USAGE@ . CR CR ;
+
+: <READ>  ( n--)
+  CR DUP .HEAD  LEVEL @ >R  0 LEVEL !
+  DUP ADDR@  2DUP VADR C@ 3 =
+  IF 1. D+ INTERPRET-S  ELSE TYPE-S CR THEN
+  .SUBS  R> LEVEL ! ;
+
+\ scaning the tree
+
+: NEXT-MSG  ( a--b)               \ traverse the tree
+  1 MAX  DUP >DTR ?DUP
+  IF 1 LEVEL +!                   \ if it has a dtr
+    SWAP DROP EXIT THEN           \ if it has a dtr
+  DUP >SISTER ?DUP
+  IF SWAP DROP EXIT THEN          \ if a sister
+  BEGIN  >PARENT -1 LEVEL +!      \ while not at top of tree
+    1 MAX DUP 1- WHILE            \ while not at top of tree
+    DUP >SISTER ?DUP              \ see if parent has sister
+    IF  SWAP DROP EXIT  THEN
+  REPEAT  1- ;                    \ return 0 if at top
+
+\ looking for a message                               21sep89tjb
+: -MSG  ( n--f)  \ msg matches pad?
+  RECORD PAD COUNT DUP  ( if pad is empty than force match )
+  IF COMPARE 0=
+  ELSE 3DROP TRUE THEN ;
+
+VARIABLE MSG#   1 MSG# !
+: NFINDER   ( n--n) \  find message only after message n
+  BEGIN DUP -MSG    ( IF FOUND, done )
+    IF PAD C@ 0=
+      IF DROP MSG# @  THEN TRUE ( NULL STRING )
+    ELSE NEXT-MSG DUP 0= THEN     \ last message
+  UNTIL  ;
+
+: FINDER   ( --n) \  find message under previous one first
+  BL TEXT  ( PAD COUNT UPPER )
+  MSG# @  NEXT-MSG DUP IF NFINDER THEN DUP 0=
+  IF 1+ NFINDER  DUP 0= ABORT" <- not found "
+  THEN DUP MSG# !       \ Remember msg number found
+  ?DATE SINCE ! ;  \ parse off date, if any
+
+\ READ and BROWSE                                     22jan88tjb
+
+: READ ( msg-name )
+  0#LINE!  FINDER <READ> ;
+
+: BROWSE ( <msg-name> )
+  FINDER  CR DUP .HEAD
+  DUP ADDR@ RD.PTR 2!
+  BEGIN  RD-S DUP EMIT 13 = UNTIL
+  CR .SUBS ;
+
+: RE-ENTER \ re-enter message text
+  WR.PTR 2@  FINDER CR
+  ADDR!  GET-TEXT PUTV ;
+
+: RE-NAME ( -- | [<msgname>] )
+  FINDER CR ." Old message name " DUP .NAME
+  DUP RECORD DUP  30 BL FILL  CR ." Enter new message name -> "
+  DUP 30 EXPECT
+  SPAN S/BL/_                   \ Replace blanks with _'s
+  UPDATE  CR .NAME ;
+
+\ addto and index                                     22FEB92TJB
+
+: ADDTO ( --)
+  FULL?  ABORT" disk full"
+  FINDER DUP CR .HEAD
+  ." Is this the parent message you want to ADDTO <ESC> to abort"
+  KEY 27 = ABORT" aborted"  SET-DATE  GET-NAME  MAKE-HEAD
+  SET-LINKS GET-TEXT  PUTV ;
+
+: ADD-DATED                 \ use the date as message name
+  ['] GET-NAME-DATE IS GET-NAME
+  ADDTO
+  ['] GET-NAME-KB IS GET-NAME ;
+
+\ NET CODE FOR INDEX TO LOOK AT NUMBER ON STACK AND USE AS MAX
+VARIABLE MAX-LEVEL
+: SET-MAX  ( [n] -- )  \ REMOVES STACK ITEM ONLY IF ONE
+  DEPTH 1 <> IF 32000 THEN MAX-LEVEL ! ;
+: LEV-OK?  ( - T/F )
+  LEVEL @  MAX-LEVEL @ <= ;
+
+: INDEX  ( --)  \ show structure of tree
+  0#LINE!  SET-MAX  FINDER CR 0 LEVEL !  DUP .NAME CR
+  BEGIN
+    NEXT-MSG   LEVEL @ 0>  WHILE
+    DUP DATE-OK? LEV-OK? AND IF
+    LEVEL @ 2* SPACES DUP .NAME
+    CR  NUF? IF EXIT THEN THEN
+  REPEAT  DROP ;
+
+: READALL  ( -- | [msgName] [mmddyy] )  \ read message and all subs
+  0#LINE!  FINDER CR 0 LEVEL !  DUP <READ> CR
+  BEGIN
+    NEXT-MSG   LEVEL @ 0>  WHILE
+    DUP DATE-OK? IF
+    LEVEL @ 2* SPACES DUP <READ>
+    CR  KEY? IF EXIT THEN THEN
+  REPEAT  DROP ;
+
+comment:   experimental outline processing stuff
+: .MSG   ( N -- )
+  LEVEL @  ?DUP IF 0 DO 9 EMIT LOOP  THEN
+  CR DUP .NAME 2 SPACES  DUP DATE@ .MSG-DATE CR LEV-TAB
+  DUP ADDR@ TYPE-S ;
+
+: makeoutline  ( -- | [msgName] [mmddyy] )  \ read message and all subs
+  FINDER CR 0 LEVEL !  DUP .MSG CR
+  BEGIN
+    NEXT-MSG   LEVEL @ 0>  WHILE
+    DUP DATE-OK?
+    IF DUP .MSG CR  KEY?
+      IF EXIT THEN THEN
+  REPEAT  DROP ;
+comment;
+
+\ import and export from files
+: GET-FILE-TEXT                   \ from open file to current pointer
+  CR  BEGIN  FULL?  ABORT" disk full"
+    LINEREAD COUNT DUP 0=           \ read line from file EOF if 0
+    IF 2DROP EOF WR-S EXIT THEN     \ if input complete
+    CR 2DUP 2- DUP 0>
+    IF TYPE ELSE 2DROP THEN         \ echo line to screen EXCEPT CR LF
+    OVER + SWAP  NUF?  ?DUP         \ Interupt with esc key
+    IF EOF WR-S ABORT" interupted" THEN
+    ?DO I C@ WR-S LOOP              \ move it to the file msg file
+  AGAIN ;
+
+: RE-IMPORT  ( -  | FILE [MSG] )  \ re-enter message text
+  OPEN  WR.PTR 2@  FINDER CR
+  ADDR!  GET-FILE-TEXT PUTV ;
+
+: IMPORT ( --  | FILENAME [MSG] )
+  OPEN  FULL?  ABORT" disk full"
+  FINDER SET-DATE  MAKE-HEAD
+  SET-LINKS  GET-FILE-TEXT  PUTV ;
+
+: EXPORT     ( -  | FILENAME [MSG] )  \ WRITES IT TO A FILE
+  PFILE  PRINTING ON  READ PRINTING OFF  PCLOSE  ;
+
+\ type a file to the screen, can be used in executed messages
+: TYPE-F        ( | <filename> --- )
+        CR ." Reading file "    \ open a file
+        BL WORD $HOPEN  ABORT" File open error"
+        0.0 SEEK  .FILE         \ reset file pointer buffer
+        BEGIN
+          LINEREAD              \ read a line, returns an address of counted $
+          DUP C@                \ check for length,
+        0<> ( NUF? 0= AND ) WHILE   \ while buffer contains something
+          CR COUNT 2- TYPE      \ type line just read without the CRLF chars.
+        REPEAT  DROP CR         \ repeat till file empty.
+        ( CLOSE ) ;                 \ close the file.
+
+\ de-link                                              04/06/91 TJB
+
+: DE-LINK  ( n--)           \ break a branch off the tree
+  DUP >PARENT >DTR OVER =    \ see if eldest child
+  IF  DUP >SISTER SWAP >PARENT DTR!
+  ELSE  DUP >SISTER  SWAP >OLDER SISTER! THEN ;
+
+: MOVE  FINDER ;  \ for MOVE xxx TO xxx
+
+: TO  ( n--)
+  1 ?ENOUGH  FINDER
+  SWAP  DUP DE-LINK SET-LINKS FLUSH ;
+
+\ REMOVE
+
+: REMOVE  ( --)  \ remove a message
+  FINDER CR DUP 1 =
+  ABORT" atempt to remove top"
+  DUP >PARENT MSG# !
+  DUP  DE-LINK 0 LEVEL !
+  BEGIN  DUP ERA-SLOT NEXT-MSG
+    LEVEL @ 0> NOT
+  UNTIL  DROP  PUTV ;
+
+\ Routines for CRUNCH
+
+: -ADDR  ( a,b--)  \ compare addr fields
+  ADDR@  ROT  ADDR@  D> ;
+
+: PAD-END  ( --n)  \  get end of pad list
+  PAD DUP @ 1+ 2* + ;
+
+: >PAD  ( n--)                  \ sort slot into list
+  PAD-END   PAD 2+              \ set up to scan list
+  DO  DUP I @ -ADDR  IF         \ if new addr lower
+  I @ SWAP I !  THEN 2 +LOOP
+  PAD-END !  1 PAD +! ;
+
+\ routines for CRUNCH                                 012288TJB
+
+: BUILD-LIST ( --)        \ make a dir. list sorted by addr
+  1 PAD !  1 PAD 2+ !           \ init dir list
+  1 BEGIN  NEXT-MSG  DUP WHILE  \ while not thru tree
+  DUP >PAD REPEAT DROP ;
+
+: SHOW-FREE  ( -- ) \ SHOWS FREE SPACE IN MSG DB
+  .BLOCKFILE  CR  ." FREE SLOTS = " CNT-SLOTS .  SPACE
+  ." FREE MESSAGE TEXT BYTES = " #BYTES WR.PTR 2@ D- D. ;
+
+: SHOW-SLOT  ( n--) \ shows links, name and addr
+  CR  DUP  5 .R  DUP >PARENT 7 .R
+  DUP >DTR 7 .R  DUP >SISTER 7 .R
+  DUP ADDR@  8  D.R   3 SPACES  .NAME  ;
+
+: SHOW-LIST  ( --)  \ show the list
+  BUILD-LIST
+  CR ."  dir# parent    dtr sister    addr      name"
+  PAD-END PAD 2+  DO  I @
+  SHOW-SLOT  NUF? ?LEAVE
+  2 +LOOP  SHOW-FREE ;
+
+\ routines for CRUNCH                                 012288TJB
+
+: CRUNCH  ( --)                \ crunch the disk
+  BUILD-LIST  0. WR.PTR 2!
+  PAD-END PAD 2+ DO
+  I @ ADDR@ RD.PTR 2!          \ set read pointer
+  WR.PTR 2@ I @ ADDR!          \ update addr field
+  BEGIN  RD-S  DUP WR-S        \ move it down
+  EOF = UNTIL
+  42 EMIT  2 +LOOP
+  PUTV ;
+
+\ some nice shortcut commands, NN                     22jan88tjb
+
+: NN    \ reads next msg in tree with no name required
+   0#LINE! ?DATE SINCE !  MSG# @
+   BEGIN NEXT-MSG  DUP DATE-OK? UNTIL  ?DUP
+   IF  DUP  <READ>   MSG# !
+   ELSE ." End of tree " THEN ;
+
+: P   \ Backs up to current message's parent
+   0#LINE! MSG# @  >PARENT DUP
+   IF  DUP <READ>  ELSE ." At top " 1+ THEN
+   MSG# !  ;
+
+: >SISTER-SINCE ( n--n)           \ trys to read sister, true if found
+   DUP
+   IF  BEGIN >SISTER  DUP DATE-OK? UNTIL
+   THEN ;
+
+: SKIP  ( -- | [<DDMMYY>] ) \ reads next sister in tree with no name required
+   ?DATE SINCE !  MSG# @       \ get since date
+   BEGIN DUP >SISTER-SINCE ?DUP 0=
+   WHILE  >PARENT DUP DUP 1 = SWAP 0= OR
+     IF DROP  ." No more sisters" .SINCE EXIT THEN
+   REPEAT NIP DUP <READ>  MSG# ! ;
+
+: BB   \ Backs up to current message's older sister or parent
+   MSG# @  >OLDER ?DUP
+   IF  DUP <READ>
+   ELSE MSG# @  >PARENT ?DUP
+     IF  DUP <READ>  ELSE ." At top " 1 THEN
+   THEN MSG# !  ;
+
+: SEL   ( n - ) \ selects message using its number, NO CHECKING FOR EMPTIES
+  MSG# !  ;
+
+: #READ ( n - )  DUP SEL <READ> ;
+
+: HELP  CR ." try READ HELP" CR ;
+
+: EDIT      ( -  | [MSG] )  \ WRITES IT TO A FILE
+  " TEMP.MSG" DROP 1- DUP $PFILE ABORT" temp file prob"
+  CR FINDER
+  PRINTING ON  ADDR@ TYPE-S PRINTING OFF
+  PCLOSE  CLOSE  READ-WRITE
+  $HOPEN  DROP  ED  WR.PTR 2@  MSG# @ ADDR!
+  CR 1 >LINE  GET-FILE-TEXT PUTV ;
+
+: MAKE-EXEC  ( -- | [MSG] [MMDDYY] )
+   FINDER ADDR@ VADR 3 SWAP C! UPDATE ;
+
+: MAKE-TEXT  ( -- | [MSG] [MMDDYY] )
+   FINDER ADDR@ VADR  ASCII # SWAP C! UPDATE ;
+
+: BYE  FLUSH BCLOSE BYE ;
+
+: F  FINDER CR .NAME ;
+
+: last  ( - )
+   MSG# @  DUP >YOUNGEST ?DUP
+   IF DUP MSG# ! NIP  THEN  CR .NAME ;
+
+\ FBBS aliases
+' INDEX ALIAS IND
+' #READ ALIAS #R
+' READALL ALIAS RA
+' SHOW-LIST ALIAS SL
+' BROWSE ALIAS BR
+' READ  ALIAS R
+' NN ALIAS N
+' BB ALIAS B
+' LAST ALIAS Y
+' INDEX ALIAS I
+' ADDTO ALIAS A
+' LAST ALIAS L
+' SKIP ALIAS S
+forth definitions
+: NRUN  ( -- )  \ New run command so entering a blank line will execute NN
+   0#LINE!  #TIB @ 0=  IF [ FBBS ] NN [ FORTH ] THEN DEFERS RUN ;
+: AUTOREAD  ['] NRUN IS RUN  ;
+' AUTOREAD ALIAS AR
+cr
+.( You should also turn off the vocabulary display with VOCOFF ) cr
+.( Then enter the FBBS vocabulary and open the message file:)  cr
+.(     fbbs use fbbs43.dat ) cr
+.( At this point both FBBS and FORTH words will work) cr
+.( Now enter: read help ) cr
+
+

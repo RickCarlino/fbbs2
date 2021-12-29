@@ -1,4 +1,5 @@
 \ ===== WORDS THAT NEED REPLACEMENT ON MODERN (NON-F83) SYSTEMS:
+\ Some of these words may be listed in the F-PC Forth documentation.
 : DOS ." MISSING DOS" ;
 : UPPER ." MISSING UPPER" ;
 : #OUT ." MISSING #OUT" ;
@@ -308,10 +309,21 @@ BEGIN KEY? ABORT" BROKE" DCD? UNTIL SINIT KEY KEY 2DROP
 : TPEE \ this is the command to return to forth
 ['] (?ERROR) IS ?ERROR STOP CR TRUE ABORT" back to forth" ;
 
-CREATE CMDS ' READ , ' BROWSE , ' INDEX , ' NN , ' HELP ,
-' TALK , ' BYE ,
-' TPEE , ' ADDTO , ' SAVEIT , ' LL , ' REMOVE ,
-' MOVETO ,
+CREATE CMDS
+  ' READ ,
+  ' BROWSE ,
+  ' INDEX ,
+  ' NN ,
+  ' HELP ,
+  ' TALK ,
+  ' BYE ,
+  ' TPEE ,
+  ' ADDTO ,
+  ' SAVEIT ,
+  ' LL ,
+  ' REMOVE ,
+  ' MOVETO ,
+
 12 CONSTANT #CMDS
 
 : CMD-OK? 0 #CMDS 0 DO OVER I 2* CMDS + @ = OR LOOP ;
@@ -319,7 +331,7 @@ CREATE CMDS ' READ , ' BROWSE , ' INDEX , ' NN , ' HELP ,
 \ limiting the trouble we get into   15MAY85JAP
 : GET-CMD
   \ DEFINED NOT ABORT" What??? "
-  ." This word needs to be re-writte. - RC 20 DEC 21 "
+  ." This word needs to be re-written. - RC 20 DEC 21 "
   BYE ;
 
 : RUNBBS BEGIN CR ." COMMAND? " QUERY GET-CMD

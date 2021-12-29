@@ -1,22 +1,26 @@
 # Forth BBS 2 (1984-1985)
 
 A reconstruction of a historic Forth BBS system.
-Not much else is known about it at this time. File timestamps and log comments seem to hint that the BBS was used around 1985 and ran on unconfirmed flavor of DOS.
+File timestamps and log comments seem to hint that the BBS was used around 1985. According to the author, it ran on a Z-80 and CP/M, though it also runs on MS-DOS. The system runs on the [F-PC Forth Environment](https://github.com/uho/F-PC). F-PC seems to work on [vDOS](https://www.vdos.info/download.html) (according to the original author) as well as [DOSBox](https://www.dosbox.com/) on Linux.
+
+Tom [left a comment](https://github.com/RickCarlino/fbbs2/issues/1#issuecomment-998279944) about getting the system to run.
 
 ## Project Status
 
 The source code does not yet run. We are actively reconstructing the software to run on modern hardware and would like to eventually host an instance of the BBS publicly.
 
-## Goals
+## Goals / TODOs
 
  * Get it to run on modern hardware, an emulator or restored hardware that is period correct
  * Document its history
  * Get it online so that it can be used again by enthusiasts (probably via TCP or WebSocket proxy since I don't have a phone line)
+ * According to Tom, the original author, the date code will need to be updated for the 2000s date format.
 
 ## Directory Contents
 
  * `pristine/` Unchanged source code for historic preservation purposes.
  * `modern/` Work in progress. A modernized version of the source code that someday will run on modern systems or emulators. We're not sure yet.
+ * `from_author/` A collection of data provided by [the author](https://github.com/tombelpasso).
  * `screens/` The original screen files split and formatted in a way that can be easily viewed on modern systems.
    * `screens_all.txt` is all screens formatted and concatenated into a single file.
    * See `pristine/fbbs.scr` for the original version of the file.
