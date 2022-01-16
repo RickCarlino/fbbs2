@@ -1,0 +1,3 @@
+MOUNT C .
+C:
+FBBS_P~1.EXE FBBS45.DAT fbbs use FBBS45.DAT read help
